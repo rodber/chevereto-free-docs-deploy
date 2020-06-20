@@ -11,6 +11,7 @@ jobs:
         with:
           repository: chevere/docs
           token: ${{ secrets.PAT_TOKEN }}
+          path: docs
       - name: Copy .vuepress to docs
         run: cp -r .vuepress docs
       - name: Copy index.md to docs as README.md
