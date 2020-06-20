@@ -1,0 +1,22 @@
+name: Build and Deploy
+on: [repository_dispatch]
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Fetch chevere/docs
+        run: git clone git@github.com:chevere/docs.git
+      - name: Copy .vuepress to docs
+        run: cp -r .vuepress docs
+      - name: Copy index.md to docs as README.md
+        run: cp index.md docs/README.md
+      - name: vuepress-deploy
+        uses: jenkey2011/vuepress-deploy@master
+        env:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          TARGET_REPO: chevere/chevere.github.io
+          TARGET_BRANCH: master
+          BUILD_SCRIPT: yarn && yarn build
+          BUILD_DIR: docs/.vuepress/dist/
