@@ -1,13 +1,16 @@
 name: Build and Deploy
-on: [repository_dispatch]
+on: [push, repository_dispatch]
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout self
         uses: actions/checkout@master
-      - name: Fetch chevere/docs
-        run: git clone git@github.com:chevere/docs.git
+      - name: Checkout docs
+        uses: actions/checkout@v2
+        with:
+          repository: chevere/docs
+          token: ${{ secrets.PAT_TOKEN }}
       - name: Copy .vuepress to docs
         run: cp -r .vuepress docs
       - name: Copy index.md to docs as README.md
