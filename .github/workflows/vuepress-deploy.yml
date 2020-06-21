@@ -14,6 +14,8 @@ jobs:
           path: docs
       - name: Copy .vuepress to docs
         run: cp -r .vuepress docs
+      - name: Build with PHP
+        run: php src/build.php
       - name: Copy index.md to docs as README.md
         run: cp index.md docs/README.md
       - name: vuepress-deploy

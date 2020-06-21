@@ -8,6 +8,8 @@ git clone git@github.com:chevere/docs.git
 
 cp -r .vuepress docs
 
+php src/build.php
+
 cp index.md docs/README.md
 
 npm run build
