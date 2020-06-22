@@ -55,7 +55,9 @@ class MarkdownIterator
     public function execute(): void
     {
         $this->iterate();
-        $ordered = array_merge(array_flip(self::NAV_ORDER), $this->hierarchy);
+        $knownKeys = array_keys($this->hierarchy);
+        $availableKeys = array_intersect(self::NAV_ORDER, $knownKeys);
+        $ordered = array_merge(array_flip($availableKeys), $this->hierarchy);
         foreach ($ordered as $name => $nodes) {
             asort($nodes);
             $this->nav[] = $this->getNav($name, $nodes);
@@ -84,7 +86,7 @@ class MarkdownIterator
             $explode = explode('/', $path);
             $root = $explode[0];
             $node = substr($path, strlen($root . '/'));
-            if ($node === false) {
+            if ($node == false) {
                 $this->recursiveIterator->next();
                 continue;
             }
