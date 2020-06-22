@@ -3,7 +3,6 @@ const {
 } = require('../../package')
 
 module.exports = {
-    theme: 'default-prefers-color-scheme',
     title: 'Chevere',
     description: 'A framework for building extensible applications',
     head: [
