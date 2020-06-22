@@ -18,9 +18,11 @@ module.exports = {
         ['@vuepress/pwa', {
             serviceWorker: true,
             updatePopup: true
-        }]
+        }],
+        ['@vuepress/medium-zoom'],
     ],
     themeConfig: {
+        theme: 'default-prefers-color-scheme',
         logo: '/logo.svg',
         repo: 'chevere/chevere',
         docsRepo: 'chevere/docs',
