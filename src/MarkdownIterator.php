@@ -4,15 +4,6 @@ declare(strict_types=1);
 
 require 'Flags.php';
 
-/**
- * Cases
- *
- *  Defaults: Top level folder = nav.js as link
- *
- * - No README.md: nav.js as menu, sidebar.js as auto (components)
- * - README.md + only top level pages: sidebar.js children ['', <etc>] (get-stared, application)
- * - README.md + levels: sidebar.js multiple sidebars, arch
- */
 class MarkdownIterator
 {
     const NAV_ORDER = ['get-started', 'architecture', 'application', 'components'];

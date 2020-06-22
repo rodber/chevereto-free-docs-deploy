@@ -4,16 +4,9 @@ declare(strict_types=1);
 
 class Flags
 {
-    private string $folder;
-
     private bool $hasNested = false;
 
     private bool $hasReadme = false;
-
-    public function __construct(string $folder)
-    {
-        $this->folder = $folder;
-    }
 
     public function withNested(): Flags
     {
