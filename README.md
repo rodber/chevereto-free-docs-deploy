@@ -12,17 +12,11 @@ It takes a markdown docs repo and generates a VuePress app that can be configure
 
 ### .vuepress (docs repo)
 
-### `config-project.js`
-
-The VuePress configuration. It will be injected to the actual build `config.js` used by VuePress.
-
-### `public/`
-
-For files like logos, icons and manifest. VuePress will map this folder to `/`. For example, `.vuepress/public/logo.svg` will be available at `/logo.svg`.
-
-### `styles/`
-
-Styles can be defined here.  
+- `config-project.js`
+  - It will be injected to the actual build `config.js` used by VuePress.
+- `public/`
+  - For files like logos, icons and manifest in the public folder. For example, `.vuepress/public/logo.svg` will be available at `/logo.svg` in the app
+- `styles/`  
 
 ### Tree
 
