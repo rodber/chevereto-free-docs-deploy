@@ -19,7 +19,7 @@ jobs:
         with:
           php-version: 7.4
           extensions: opcache, mbstring, ds
-          ini-values: opcache.enable_cli = 1, opcache.enable = 1, extension="ds.so"
+          ini-values: opcache.enable_cli = 1, opcache.enable = 1
 
       - name: Get Composer Cache Directory
         id: composer-cache
