@@ -27,20 +27,20 @@ echo 'PHP: Build nav & sidebar'
 php build.php
 
 echo 'yarn: Build VuePress'
-yarn && yarn build
+yarn && yarn dev
 
-cd docs/.vuepress/dist
+# cd docs/.vuepress/dist
 
-if [ -z "$CNAME" ]; then
-    echo 'CNAME: None'
-else
-    echo 'CNAME: created at docs/.vuepress/dist'
-    echo $CNAME >CNAME
-fi
+# if [ -z "$CNAME" ]; then
+#     echo 'CNAME: None'
+# else
+#     echo 'CNAME: created at docs/.vuepress/dist'
+#     echo $CNAME >CNAME
+# fi
 
-git init
-git add -A
-git commit -m 'deploy'
-git push -f $GIT_HOSTING master
+# git init
+# git add -A
+# git commit -m 'deploy'
+# git push -f $GIT_HOSTING master
 
-cd -
+# cd -
