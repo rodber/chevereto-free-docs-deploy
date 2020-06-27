@@ -10,8 +10,8 @@ jobs:
       - name: Checkout docs
         uses: actions/checkout@v2
         with:
-          repository: chevere/docs
-          token: ${{ secrets.PAT_TOKEN }}
+          repository: ${{ secrets.REPO_DOCS }}
+          token: ${{ secrets.ACCESS_TOKEN }}
           path: docs
 
       - name: Setup PHP
@@ -58,9 +58,9 @@ jobs:
       - name: vuepress-deploy
         uses: jenkey2011/vuepress-deploy@master
         env:
-          ACCESS_TOKEN: ${{ secrets.PAT_TOKEN }}
-          TARGET_REPO: chevere/chevere.github.io
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          TARGET_REPO: ${{ secrets.REPO_HOSTING }}
           TARGET_BRANCH: master
           BUILD_SCRIPT: yarn && yarn build
           BUILD_DIR: docs/.vuepress/dist/
-          CNAME: chevere.org
+          CNAME: ${{ secrets.CNAME }}

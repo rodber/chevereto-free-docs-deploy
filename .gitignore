@@ -1,5 +1,5 @@
-docs/
-node_modules/
-vendor/
+/docs
+/node_modules
+/vendor
 /config.sh
 /composer.lock

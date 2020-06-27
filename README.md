@@ -1,44 +1,37 @@
 # DocsDeploy
 
-> A VuePress documentation deploy generator.
+> A VuePress documentation deploy template.
 
-## Conventions
+It takes a markdown docs repo and generates a VuePress app that can be configured to be automatically published to Github pages.
 
-> See working documentation for [chevere/docs](https://github.com/chevere/docs/) at [chevere.org](https://chevere.org/)
+## Requirements
 
-It follows the conventions of VuePress so `README.md` == index == `/` = `""`.
+* A markdown docs repository (example [chevere/docs](https://github.com/chevere/docs/))
 
-## VuePress
+## Markdown docs conventions
 
-### `.vuepress/config-project.js`
+### .vuepress (docs repo)
+
+### `config-project.js`
 
 The VuePress configuration. It will be injected to the actual build `config.js` used by VuePress.
 
-### `.vuepress/public/`
+### `public/`
 
 For files like logos, icons and manifest. VuePress will map this folder to `/`. For example, `.vuepress/public/logo.svg` will be available at `/logo.svg`.
 
-### `.vuepress/styles/`
+### `styles/`
 
 Styles can be defined here.  
 
-## Document Tree
+### Tree
 
 ```shell
 tree ./ -a -I .git
 ./
 ├── list --> @1
-│   ├── Cache.md
-│   ├── Console.md
-│   ├── Controller.md
-│   ├── Filesystem.md
-│   ├── Message.md
-│   ├── Plugin.md
-│   ├── Routing.md
-│   ├── Str.md
-│   ├── ThrowableHandler.md
-│   ├── VarDump.md
-│   └── Writer.md
+│   ├── page-1.md
+│   └── page-2.md
 ├── list-index --> @2
 │   ├── page-1.md
 │   ├── page-2.md
@@ -57,7 +50,9 @@ tree ./ -a -I .git
 │   │   └── page.md
 │   ├── README.md
 ├── README.md
-├── sortNav.php <-- Sorts nav
+├── sortNav.php <-- To sort the nav
+├── .github
+│   ├── workflows/deploy.yml <-- For automatic deploy
 └── .vuepress
     ├── config-project.js
     ├── public
@@ -79,3 +74,63 @@ tree ./ -a -I .git
 | @4 nlist-index    | Yes         | 1 level | Same as @2     | A combined version @2 for each folder |
 
 > **(*)** Case `@3` is **discouraged** (needs to implement nav groups, looks ugly at this time)
+
+## Deploying
+
+### GitHub
+
+Requirements:
+
+* A Github repository for hosting (see Github pages)
+
+Require Secrets (on deploy repo):
+
+- `REPO_DOCS` example [`chevere/docs`](https://github.com/chevere/docs/)
+- `REPO_HOSTING` example `chevere/chevere.github.io`
+- `CNAME` example `chevere.org`
+
+#### Automatic deploy
+
+Require Secrets (on docs repo):
+
+- `REPO_DEPLOY` the repo used for deploy example `chevere/docs-deploy`
+- `PAT_USERNAME` username of the personal access token
+- `ACCESS_TOKEN` value of the personal access token
+
+Configure the docs repo to automatically trigger a new deploy by adding `.github/workflows/push-deploy.yml` in the documentation repo.
+
+```yml
+name: Push deploy
+on: push
+jobs:
+  push-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Push it
+        run: |
+          curl -XPOST -u "${{ secrets.PAT_USERNAME }}:${{ secrets.ACCESS_TOKEN }}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/${{ secrets.REPO_DEPLOY }}/dispatches --data '{"event_type": "build_application"}'
+```
+
+Change `on` to customize the triggering.
+
+### Shell
+
+Install dependencies:
+
+```sh
+yarn && composer install
+```
+
+Copy `config.sh.dist` to `config.sh`.
+
+```sh
+cp config.sh.dist config.sh
+```
+
+Change the variables to match the target project, then make `deploy.sh` executable:
+
+```sh
+chmod +x deploy.sh
+```
+
+Run `yarn dev` to preview, deploy running `./deploy.sh`.
