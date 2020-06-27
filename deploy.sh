@@ -20,14 +20,14 @@ else
     git clone $GIT_DOCS
 fi
 
-echo 'Copying .vuepress/ contents to docs/.vuepress/'
+echo 'Copy .vuepress/ contents to docs/.vuepress/'
 cp -rf .vuepress/. docs/.vuepress/
 
-echo 'PHP: Building nav & sidebar'
+echo 'PHP: Build nav & sidebar'
 php build.php
 
-echo 'npm: Building VuePress'
-npm run dev
+echo 'yarn: Build VuePress'
+yarn && yarn build
 
 cd docs/.vuepress/dist
 

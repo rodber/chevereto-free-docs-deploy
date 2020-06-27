@@ -35,10 +35,10 @@ jobs:
             ${{ runner.os }}-composer-
 
       - name: Install PHP dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest --classmap-authoritative
+        run: composer install --prefer-dist
 
-      - name: Copy .vuepress to docs
-        run: cp -r .vuepress docs
+      - name: Copy .vuepress/ contents to docs/.vuepress/
+        run: cp -rf .vuepress/. docs/.vuepress/
 
       - name: Build with PHP
         run: php build.php
