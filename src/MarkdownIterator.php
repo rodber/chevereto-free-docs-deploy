@@ -2,12 +2,16 @@
 
 declare(strict_types=1);
 
-require 'Flags.php';
+namespace DocsDeploy;
+
+use RecursiveDirectoryIterator;
+use RecursiveFilterIterator;
+use RecursiveIteratorIterator;
+use UnexpectedValueException;
+use DocsDeploy\Flags;
 
 class MarkdownIterator
 {
-    const NAV_ORDER = ['get-started', 'architecture', 'application', 'components'];
-    
     private string $path;
 
     private RecursiveDirectoryIterator $dirIterator;
@@ -23,12 +27,6 @@ class MarkdownIterator
      */
     private array $flagged = [];
 
-    private array $links = [];
-
-    private array $nav = [];
-
-    private array $sidebar = [];
-
     public function __construct(string $path)
     {
         $this->path = rtrim(realpath($path), '/') . '/';
@@ -42,39 +40,17 @@ class MarkdownIterator
                 . $e->getMessage() . "\n\n"
                 . '🤔 Maybe try with user privileges?';
         }
-    }
-
-    public function withAddedLink(string $name, string $link): MarkdownIterator
-    {
-        $new = clone $this;
-        $new->links[$name] = $link;
-
-        return $new;
-    }
-
-    public function execute(): void
-    {
         $this->iterate();
-        $knownKeys = array_keys($this->hierarchy);
-        $availableKeys = array_intersect(self::NAV_ORDER, $knownKeys);
-        $ordered = array_merge(array_flip($availableKeys), $this->hierarchy);
-        foreach ($ordered as $name => $nodes) {
-            asort($nodes);
-            $this->nav[] = $this->getNav($name, $nodes);
-            $getSidebar = $this->getSidebar($name, $nodes);
-            $this->sidebar["/$name/"] = empty($getSidebar) ? 'auto' : $getSidebar;
-        }
-        foreach ($this->links as $name => $link) {
-            $this->nav[] = $this->getNavLink($name, $link);
-        }
-        $this->exportToFile(
-            $this->getModuleExports($this->nav),
-            $this->path . '.vuepress/nav/en.js'
-        );
-        $this->exportToFile(
-            $this->getModuleExports($this->sidebar),
-            $this->path . '.vuepress/sidebar/en.js'
-        );
+    }
+
+    public function hierarchy(): array
+    {
+        return $this->hierarchy;
+    }
+
+    public function flagged(): array
+    {
+        return $this->flagged;
     }
 
     private function iterate(): void
@@ -84,8 +60,12 @@ class MarkdownIterator
             $path = $this->recursiveIterator->current()->getPathName();
             $path = substr($path, $chop);
             $explode = explode('/', $path);
-            $root = $explode[0];
-            $node = substr($path, strlen($root . '/'));
+            $root = '/';
+            $node = $explode[0];
+            if (isset($explode[1])) {
+                $root = '/' . $explode[0] . '/';
+                $node = substr($path, strlen($root) - 1);
+            }
             if ($node == false) {
                 $this->recursiveIterator->next();
                 continue;
@@ -106,130 +86,6 @@ class MarkdownIterator
             $this->flagged[$root] = $flags;
             $this->recursiveIterator->next();
         }
-    }
-
-    private function getNavLink(string $name, string $link): array
-    {
-        return [
-            'text' => $name,
-            'link' => $link
-        ];
-    }
-
-    private function getNav(string $name, array $nodes): array
-    {
-        $title = $this->getTitle($name);
-        $link = "/$name/";
-        if ($this->flagged[$name]->hasReadme()) {
-            return $this->getNavLink($title, $link);
-        }
-        $array = [
-            'text' => $title,
-            'ariaLabel' => $title . ' Menu'
-        ];
-        foreach ($nodes as $nodeName) {
-            $array['items'][] = $this->getNavLink(
-                $this->getTitle($nodeName),
-                $this->getUsableNode($link . $nodeName)
-            );
-        }
-
-        return $array;
-    }
-
-    public function getSidebar(string $name, array $nodes): array
-    {
-        $title = $this->getTitle($name);
-        if (!$this->flagged[$name]->hasReadme()) {
-            return [];
-        }
-        if (!$this->flagged[$name]->hasNested()) {
-            return [$this->getSidebarFor(
-                $title,
-                $this->getNodesChildren($nodes)
-            )];
-        }
-        $sidebar = [];
-        $nested = $this->getNestedHierarchy($nodes);
-        foreach ($nested as $nestedName => $nestedNodes) {
-            $getSidebar = $this->getSidebarFor(
-                $this->getTitle($nestedName),
-                $this->getNodesChildren($nestedNodes)
-            );
-            $sidebar[] = empty($getSidebar) ? 'auto'.$nestedName : $getSidebar;
-        };
-
-        return $sidebar;
-    }
-
-    private function getNodesChildren(array $nodes): array
-    {
-        $hasReadme = false;
-        $children = [];
-        foreach ($nodes as $node) {
-            if ($node === '') {
-                $hasReadme = true;
-                continue;
-            }
-            $children[] = $this->getUsableNode($node);
-        }
-
-        if ($hasReadme) {
-            $children = array_merge([''], $children);
-        }
-
-        return $children;
-    }
-
-    private function getNestedHierarchy(array $nodes): array
-    {
-        $hierarchy = [];
-        foreach ($nodes as $node) {
-            $explode = explode('/', $node);
-            $root = $explode[0];
-            if ($root === '') {
-                continue;
-            }
-            $node = $this->getUsableNode($node);
-            $hierarchy[$root][] = $node;
-        }
-
-        return $hierarchy;
-    }
-
-    public function getSidebarFor(string $title, array $children): array
-    {
-        return [
-            'title' => $title,
-            'collapsable' => false,
-            'children' => $children
-        ];
-    }
-
-    private function getTitle(string $name): string
-    {
-        return ucwords(strtr($name, [
-            '-' => ' ',
-            '.md' => ''
-        ]));
-    }
-
-    public function getUsableNode(string $node): string
-    {
-        return strtr($node, [
-            'README.md' => '',
-            '.md' => ''
-        ]);
-    }
-
-    private function getModuleExports(array $array): string
-    {
-        return 'module.exports = ' . json_encode($array, JSON_PRETTY_PRINT);
-    }
-
-    private function exportToFile(string $contents, string $filename): void
-    {
-        file_put_contents($filename, $contents);
     }
 
     private function getRecursiveDirectoryIterator(string $path): RecursiveDirectoryIterator

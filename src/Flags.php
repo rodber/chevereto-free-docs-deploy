@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace DocsDeploy;
+
 class Flags
 {
     private bool $hasNested = false;

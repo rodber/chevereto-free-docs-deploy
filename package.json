@@ -9,12 +9,14 @@
     },
     "scripts": {
         "dev": "vuepress dev docs",
-        "build": "vuepress build docs"
+        "build": "vuepress build docs",
+        "start": "nodemon --ext md,vue,js --watch docs/.vuepress --watch . --exec vuepress dev docs"
     },
     "license": "MIT",
     "devDependencies": {
         "@vuepress/plugin-medium-zoom": "^1.5.2",
         "@vuepress/plugin-pwa": "^1.5.2",
+        "nodemon": "^2.0.4",
         "vuepress": "^1.5.2"
     },
     "bugs": {

@@ -1,0 +1,5 @@
+# !/usr/bin/env sh
+
+GIT_DOCS="git@github.com:chevere/docs.git"
+GIT_HOSTING="git@github.com:chevere/chevere.github.io.git"
+CNAME="chevere.org"

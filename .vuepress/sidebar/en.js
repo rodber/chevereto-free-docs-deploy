@@ -1,53 +1,59 @@
-// module.exports = {}
 module.exports = {
-    '/get-started/': [
+    "\/get-started\/": [
         {
-            title: 'Get Started',
-            collapsable: false,
-            children: [
-                '',
-                'overview',
-                'installing',
+            "title": "Get Started",
+            "collapsable": false,
+            "children": [
+                "",
+                "installation",
+                "learn-by-example",
+                "overview"
             ]
         }
     ],
-    '/architecture/': [
+    "\/architecture\/": [
         {
-            title: 'Architecture',
-            collapsable: false,
-            sidebarDepth: 2,
-            children: [
-                '',
-                'coding-standard',
-                'immutability',
+            "title": "Coding",
+            "collapsable": false,
+            "children": [
+                "coding\/coding-standard",
+                "coding\/immutability"
             ]
         },
         {
-            title: 'Spec',
-            collapsable: false,
-            children: [
-                'components',
-                'interfaces',
-                'exceptions',
-                'testing',
+            "title": "Development",
+            "collapsable": false,
+            "children": [
+                "development\/workspace"
             ]
         },
         {
-            title: 'Development',
-            collapsable: false,
-            children: [
-                'workspace'
+            "title": "Scale",
+            "collapsable": false,
+            "children": [
+                "scale\/portability",
+                "scale\/state"
             ]
-        }
-    ],
-    '/application/': [
+        },
         {
-            collapsable: false,
-            children: [
-                'state',
-                'recommendations'
+            "title": "Spec",
+            "collapsable": false,
+            "children": [
+                "spec\/components",
+                "spec\/exceptions",
+                "spec\/interfaces",
+                "spec\/testing"
             ]
         }
     ],
-    '/components/': 'auto'
+    "\/components\/": "auto",
+    "\/": [
+        {
+            "title": "",
+            "collapsable": false,
+            "children": [
+                ""
+            ]
+        }
+    ]
 }

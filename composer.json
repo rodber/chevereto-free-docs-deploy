@@ -1,0 +1,25 @@
+{
+    "name": "chevere/docs-deploy",
+    "description": "A VuePress documentation deploy",
+    "type": "project",
+    "license": "MIT",
+    "authors": [{
+        "name": "Rodolfo Berrios",
+        "email": "rodolfo@chevere.org"
+    }],
+    "repositories": [{
+        "type": "vcs",
+        "url": "https://github.com/chevere/chevere"
+    }],
+    "require": {
+        "chevere/chevere": "dev-master"
+    },
+    "autoload": {
+        "files": [
+            "src/functions.php"
+        ],
+        "psr-4": {
+            "DocsDeploy\\": "src/"
+        }
+    }
+}

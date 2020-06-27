@@ -2,25 +2,45 @@
 
 set -e
 
-rm -rf docs
+. ./config.sh
 
-git clone git@github.com:chevere/docs.git
+if [ -d "docs" ]; then
+    cd docs
+    origin=$(git config --get remote.origin.url)
+    if [ "$origin" != "$GIT_DOCS" ]; then
+        echo "Docs repo changed!"
+        rm -rf -- "$(pwd -P)" && cd ..
+        git clone $GIT_DOCS
+    else
+        git reset --hard
+        git pull
+        cd -
+    fi
+else
+    git clone $GIT_DOCS
+fi
 
-cp -r .vuepress docs
+echo 'Copying .vuepress/ contents to docs/.vuepress/'
+cp -rf .vuepress/. docs/.vuepress/
 
-php src/build.php
+echo 'PHP: Building nav & sidebar'
+php build.php
 
-cp index.md docs/README.md
-
-npm run build
+echo 'npm: Building VuePress'
+npm run dev
 
 cd docs/.vuepress/dist
 
-echo 'chevere.org' > CNAME
+if [ -z "$CNAME" ]; then
+    echo 'CNAME: None'
+else
+    echo 'CNAME: created at docs/.vuepress/dist'
+    echo $CNAME >CNAME
+fi
 
 git init
 git add -A
 git commit -m 'deploy'
-git push -f git@github.com:chevere/chevere.github.io.git master
+git push -f $GIT_HOSTING master
 
 cd -
