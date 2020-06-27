@@ -1,6 +1,6 @@
 # DocsDeploy
 
-> A VuePress documentation deploy generator
+> A VuePress documentation deploy generator.
 
 ## Conventions
 
