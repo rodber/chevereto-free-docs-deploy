@@ -21,12 +21,6 @@ jobs:
           extensions: opcache, mbstring, ds
           ini-values: opcache.enable_cli = 1, opcache.enable = 1, extension="ds.so"
 
-      # - name: Validate composer
-      #   run: composer validate
-
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest --classmap-authoritative
-
       - name: Get Composer Cache Directory
         id: composer-cache
         run: |
@@ -37,6 +31,9 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-composer-
+
+      - name: Install PHP dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest --classmap-authoritative
 
       - name: Copy .vuepress to docs
         run: cp -r .vuepress docs
