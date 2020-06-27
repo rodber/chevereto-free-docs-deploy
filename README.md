@@ -80,16 +80,20 @@ Requirements:
 Require Secrets (on deploy repo):
 
 - `REPO_DOCS` example [`chevere/docs`](https://github.com/chevere/docs/)
+- `REPO_DOCS_ACCESS_TOKEN` token for the repo above
 - `REPO_HOSTING` example `chevere/chevere.github.io`
+- `REPO_HOSTING_ACCESS_TOKEN` token for the repo above
 - `CNAME` example `chevere.org`
 
 #### Automatic deploy
 
-Require Secrets (on docs repo):
+Require Secrets (on docs repo)
 
-- `REPO_DEPLOY` the repo used for deploy example `chevere/docs-deploy`
-- `PAT_USERNAME` username of the personal access token
-- `ACCESS_TOKEN` value of the personal access token
+- `REPO_DOCS_DEPLOY` the repo used for deploy example `chevere/docs-deploy`
+- `REPO_DOCS_DEPLOY_USERNAME` username with access to docs deploy repo
+- `REPO_DOCS_DEPLOY_TOKEN` PAT for the username above
+
+> The personal access token must grant access to `repo` scope
 
 Configure the docs repo to automatically trigger a new deploy by adding `.github/workflows/push-deploy.yml` in the documentation repo.
 
@@ -102,7 +106,7 @@ jobs:
     steps:
       - name: Push it
         run: |
-          curl -XPOST -u "${{ secrets.PAT_USERNAME }}:${{ secrets.ACCESS_TOKEN }}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/${{ secrets.REPO_DEPLOY }}/dispatches --data '{"event_type": "build_application"}'
+          curl -XPOST -u "${{ secrets.REPO_DOCS_DEPLOY_USERNAME }}:${{ secrets.REPO_DOCS_DEPLOY_TOKEN }}" -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" https://api.github.com/repos/${{ secrets.REPO_DOCS_DEPLOY }}/dispatches --data '{"event_type": "build_application"}'
 ```
 
 Change `on` to customize the triggering.
