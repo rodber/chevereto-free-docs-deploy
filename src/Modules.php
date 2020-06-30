@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace DocsDeploy;
 
+use Chevere\Components\Filesystem\File;
+use Chevere\Components\Filesystem\FilePhp;
+use Chevere\Components\Filesystem\FilePhpReturn;
+
 class Modules
 {
-    private array $hierarchy;
-
-    private array $flagged;
+    private MarkdownIterator $markdownIterator;
 
     private array $sortNav;
 
@@ -20,8 +22,7 @@ class Modules
 
     public function __construct(MarkdownIterator $markdownIterator, array $sortNav)
     {
-        $this->hierarchy = $markdownIterator->hierarchy();
-        $this->flagged = $markdownIterator->flagged();
+        $this->markdownIterator = $markdownIterator;
         $this->sortNav = $sortNav;
     }
 
@@ -35,11 +36,17 @@ class Modules
 
     public function execute(): void
     {
-        $sortedNav = (new SortArray($this->hierarchy, $this->sortNav))->toArray();
+        $sortedNav = (new SortArray($this->markdownIterator->hierarchy(), $this->sortNav))->toArray();
         foreach ($sortedNav as $path => $nodes) {
             asort($nodes);
             if ($path !== '/') {
                 $this->nav[] = $this->getNav($path, $nodes);
+            }
+            $targetPath = $this->markdownIterator->path()->getChild(ltrim($path, '/'));
+            $targetPathSidebar = new File($targetPath->getChild('sidebar.php'));
+            if ($targetPathSidebar->exists()) {
+                $this->sidebar[$path] = (new FilePhpReturn(new FilePhp($targetPathSidebar)))->var();
+                break;
             }
             $getSidebar = $this->getSidebar($path, $nodes);
             $this->sidebar[$path] = empty($getSidebar) ? 'auto' : $getSidebar;
@@ -67,7 +74,7 @@ class Modules
     private function getNav(string $path, array $nodes): array
     {
         $title = $this->getTitle($path);
-        if ($this->flagged[$path]->hasReadme()) {
+        if ($this->markdownIterator->flagged()[$path]->hasReadme()) {
             return $this->getNavLink($title, $path);
         }
         $array = [
@@ -87,10 +94,10 @@ class Modules
     private function getSidebar(string $path, array $nodes): array
     {
         $title = $this->getTitle($path);
-        if (!$this->flagged[$path]->hasReadme()) {
+        if (!$this->markdownIterator->flagged()[$path]->hasReadme()) {
             return [];
         }
-        if (!$this->flagged[$path]->hasNested()) {
+        if (!$this->markdownIterator->flagged()[$path]->hasNested()) {
             return [$this->getSidebarFor(
                 $title,
                 $this->getNodesChildren($nodes)
@@ -99,11 +106,14 @@ class Modules
         $sidebar = [];
         $nested = $this->getNestedHierarchy($nodes);
         foreach ($nested as $nestedName => $nestedNodes) {
+            if (count(explode('/', $nestedNodes[0])) > 2) {
+                continue;
+            }
             $getSidebar = $this->getSidebarFor(
                 $this->getTitle($nestedName),
                 $this->getNodesChildren($nestedNodes)
             );
-            $sidebar[] = empty($getSidebar) ? 'auto'.$nestedName : $getSidebar;
+            $sidebar[] = empty($getSidebar) ? 'auto' : $getSidebar;
         };
 
         return $sidebar;

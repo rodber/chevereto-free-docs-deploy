@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace DocsDeploy;
 
+use Chevere\Components\Filesystem\Path;
+use Chevere\Interfaces\Filesystem\PathInterface;
 use RecursiveDirectoryIterator;
 use RecursiveFilterIterator;
 use RecursiveIteratorIterator;
@@ -12,7 +14,7 @@ use DocsDeploy\Flags;
 
 class MarkdownIterator
 {
-    private string $path;
+    private PathInterface $path;
 
     private RecursiveDirectoryIterator $dirIterator;
 
@@ -29,7 +31,7 @@ class MarkdownIterator
 
     public function __construct(string $path)
     {
-        $this->path = rtrim(realpath($path), '/') . '/';
+        $this->path = new Path(rtrim(realpath($path), '/') . '/');
         $this->dirIterator = $this->getRecursiveDirectoryIterator($path);
         $this->filterIterator = $this->getRecursiveFilterIterator($this->dirIterator);
         $this->recursiveIterator = new RecursiveIteratorIterator($this->filterIterator);
@@ -41,6 +43,11 @@ class MarkdownIterator
                 . '🤔 Maybe try with user privileges?';
         }
         $this->iterate();
+    }
+
+    public function path(): PathInterface
+    {
+        return $this->path;
     }
 
     public function hierarchy(): array
@@ -55,7 +62,7 @@ class MarkdownIterator
 
     private function iterate(): void
     {
-        $chop = strlen($this->path);
+        $chop = strlen($this->path->absolute());
         while ($this->recursiveIterator->valid()) {
             $path = $this->recursiveIterator->current()->getPathName();
             $path = substr($path, $chop);
