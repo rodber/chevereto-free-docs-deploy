@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Chevere\Components\Filesystem\FileFromString;
+use Chevere\Components\Writer\StreamWriterFromString;
 use DocsDeploy\MarkdownIterator;
 use DocsDeploy\Modules;
 
@@ -28,4 +29,10 @@ foreach ([
         $file->create();
     }
     $file->put(toModuleExport($module));
+}
+$stylesPath = $vuePressPath . 'styles/';
+$indexProjectStyl = new FileFromString($stylesPath . 'index-project.styl');
+if ($indexProjectStyl->exists()) {
+    $indexStyl = new StreamWriterFromString($stylesPath . 'index.styl', 'a');
+    $indexStyl->write("\n\n" . $indexProjectStyl->contents());
 }
