@@ -4,6 +4,12 @@
 
 It takes a markdown docs repo and generates a VuePress app that can be configured to be automatically published to Github pages.
 
+## Installation
+
+```sh
+composer install
+```
+
 ## Requirements
 
 * A markdown docs repository (example [chevere/docs](https://github.com/chevere/docs/))
