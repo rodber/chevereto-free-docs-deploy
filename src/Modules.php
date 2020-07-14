@@ -42,7 +42,7 @@ class Modules
             if ($path !== '/') {
                 $this->nav[] = $this->getNav($path, $nodes);
             }
-            $targetPath = $this->markdownIterator->path()->getChild(ltrim($path, '/'));
+            $targetPath = $this->markdownIterator->dir()->path()->getChild(ltrim($path, '/'));
             $targetPathSidebar = new File($targetPath->getChild('sidebar.php'));
             if ($targetPathSidebar->exists()) {
                 $this->sidebar[$path] = (new FilePhpReturn(new FilePhp($targetPathSidebar)))->var();

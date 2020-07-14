@@ -2,18 +2,20 @@
 
 declare(strict_types=1);
 
-use Chevere\Components\Writer\StreamWriterFromString;
 use DocsDeploy\MarkdownIterator;
 use DocsDeploy\Modules;
 
+use function Chevere\Components\Filesystem\getDirFromString;
 use function Chevere\Components\Filesystem\getFileFromString;
+use function Chevere\Components\Writer\writerForFile;
 use function DocsDeploy\toModuleExport;
 
 require 'vendor/autoload.php';
 
 $docs = getcwd() . '/docs/';
 $sortNavFile = $docs . 'sortNav.php';
-$iterator = new MarkdownIterator($docs);
+$docsDir = getDirFromString($docs);
+$iterator = new MarkdownIterator($docsDir);
 if (stream_resolve_include_path($sortNavFile)) {
     $sortNav = include $docs . 'sortNav.php';
 }
@@ -33,6 +35,6 @@ foreach ([
 $stylesPath = $vuePressPath . 'styles/';
 $indexProjectStyl = getFileFromString($stylesPath . 'index-project.styl');
 if ($indexProjectStyl->exists()) {
-    $indexStyl = new StreamWriterFromString($stylesPath . 'index.styl', 'a');
+    $indexStyl = writerForFile(getFileFromString($stylesPath . 'index.styl'), 'a');
     $indexStyl->write("\n\n" . $indexProjectStyl->contents());
 }
