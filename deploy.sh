@@ -27,8 +27,8 @@ if [ "$2" = 'true' ]; then
             rm -rf -- "$(pwd -P)" && cd ..
             git clone $GIT_DOCS
         else
-            git reset --hard
-            git pull
+            git fetch --all
+            git reset --hard origin/master
             cd -
         fi
     else
