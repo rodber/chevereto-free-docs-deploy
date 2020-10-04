@@ -42,12 +42,6 @@ class Modules
             if ($path !== '/') {
                 $this->nav[] = $this->getNav($path, $nodes);
             }
-            $targetPath = $this->markdownIterator->dir()->path()->getChild(ltrim($path, '/'));
-            $targetPathSidebar = new File($targetPath->getChild('sidebar.php'));
-            if ($targetPathSidebar->exists()) {
-                $this->sidebar[$path] = (new FilePhpReturn(new FilePhp($targetPathSidebar)))->var();
-                break;
-            }
             $getSidebar = $this->getSidebar($path, $nodes);
             $this->sidebar[$path] = empty($getSidebar) ? 'auto' : $getSidebar;
         }
@@ -100,7 +94,7 @@ class Modules
         if (!$this->markdownIterator->flagged()[$path]->hasNested()) {
             return [$this->getSidebarFor(
                 $title,
-                $this->getNodesChildren($nodes)
+                $this->getNodesChildren($path, $nodes)
             )];
         }
         $sidebar = [];
@@ -111,7 +105,7 @@ class Modules
             }
             $getSidebar = $this->getSidebarFor(
                 $this->getTitle($nestedName),
-                $this->getNodesChildren($nestedNodes)
+                $this->getNodesChildren($path, $nestedNodes)
             );
             $sidebar[] = empty($getSidebar) ? 'auto' : $getSidebar;
         };
@@ -127,7 +121,7 @@ class Modules
         ];
     }
 
-    private function getNodesChildren(array $nodes): array
+    private function getNodesChildren(string $path, array $nodes): array
     {
         $hasReadme = false;
         $children = [];
@@ -138,9 +132,20 @@ class Modules
             }
             $children[] = $this->getUsableNode($node);
         }
-
         if ($hasReadme) {
             $children = array_merge([''], $children);
+        }
+        $targetPath = $this->markdownIterator->dir()->path()->getChild(ltrim($path, '/'));
+        $childrenFile = new File($targetPath->getChild('children.php'));
+        if ($childrenFile->exists()) {
+            $declaredChildren = (new FilePhpReturn(new FilePhp($childrenFile)))->var();
+            foreach ($declaredChildren as $k => $v) {
+                if (!in_array($v, $children)) {
+                    unset($declaredChildren[$k]);
+                }
+            }
+            $ordered = array_flip(array_replace(array_flip($declaredChildren), array_flip($children)));
+            $children = array_values($ordered);
         }
 
         return $children;
