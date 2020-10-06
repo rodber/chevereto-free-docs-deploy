@@ -23,7 +23,7 @@ $modules = new Modules($iterator, $sortNav);
 $modules->execute();
 $vuePressPath = "$docs.vuepress/";
 foreach ([
-    // 'nav/en.js' => $modules->nav(),
+    'nav/en.js' => $modules->nav(),
     'sidebar/en.js' => $modules->sidebar(),
 ] as $file => $module) {
     $file = fileForString($vuePressPath . $file);
@@ -31,7 +31,6 @@ foreach ([
         $file->create();
     }
     $file->put(toModuleExport($module));
-    // xdd(toModuleExport($module));
 }
 $stylesPath = $vuePressPath . 'styles/';
 $indexProjectStyl = fileForString($stylesPath . 'index-project.styl');
