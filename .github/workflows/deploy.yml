@@ -56,7 +56,7 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: vuepress-deploy
-        uses: jenkey2011/vuepress-deploy@master
+        uses: jenkey2011/vuepress-deploy@v1
         env:
           ACCESS_TOKEN: ${{ secrets.REPO_HOSTING_ACCESS_TOKEN }}
           TARGET_REPO: ${{ secrets.REPO_HOSTING }}
