@@ -17,7 +17,7 @@ $sortNavFile = fileForPath($docs . 'sortNav.php');
 $docsDir = dirForPath($docs);
 $iterator = new MarkdownIterator($docsDir);
 $sortNav = $sortNavFile->exists()
-    ? include $sortNavFile->path()->absolute()
+    ? include $sortNavFile->path()->toString()
     : [];
 $modules = new Modules($iterator, $sortNav);
 $modules->execute();

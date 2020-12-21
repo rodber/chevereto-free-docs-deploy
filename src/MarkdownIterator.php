@@ -35,7 +35,7 @@ class MarkdownIterator
     {
         $dir->assertExists();
         $this->dir = $dir;
-        $this->dirIterator = $this->getRecursiveDirectoryIterator($dir->path()->absolute());
+        $this->dirIterator = $this->getRecursiveDirectoryIterator($dir->path()->toString());
         $this->filterIterator = $this->getRecursiveFilterIterator($this->dirIterator);
         $this->recursiveIterator = new RecursiveIteratorIterator($this->filterIterator);
         try {
@@ -65,7 +65,7 @@ class MarkdownIterator
 
     private function iterate(): void
     {
-        $chop = strlen($this->dir->path()->absolute());
+        $chop = strlen($this->dir->path()->toString());
         while ($this->recursiveIterator->valid()) {
             $path = $this->recursiveIterator->current()->getPathName();
             $path = substr($path, $chop);
