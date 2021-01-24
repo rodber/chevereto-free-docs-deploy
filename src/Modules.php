@@ -7,6 +7,8 @@ namespace DocsDeploy;
 use Chevere\Components\Filesystem\File;
 use Chevere\Components\Filesystem\FilePhp;
 use Chevere\Components\Filesystem\FilePhpReturn;
+use Chevere\Components\Message\Message;
+use Chevere\Exceptions\Core\TypeException;
 
 class Modules
 {
@@ -85,7 +87,7 @@ class Modules
         return $array;
     }
 
-    private function getSidebar(string $path, array $nodes): array
+    private function getSidebar(string $path, array $nodes): array|string
     {
         $title = $this->getTitle($path);
         if (!$this->markdownIterator->flagged()[$path]->hasReadme()) {
@@ -96,6 +98,10 @@ class Modules
                 $title,
                 $this->getNodesChildren($path, $nodes)
             )];
+        }
+        $sidebarPath= $this->markdownIterator->dir()->path()->getChild(ltrim($path, '/') . 'sidebar.php');
+        if($sidebarPath->exists()) {
+            return include $sidebarPath->toString();
         }
         $sidebar = [];
         $nested = $this->getNestedHierarchy($nodes);
@@ -139,6 +145,12 @@ class Modules
         $childrenFile = new File($targetPath->getChild('children.php'));
         if ($childrenFile->exists()) {
             $declaredChildren = (new FilePhpReturn(new FilePhp($childrenFile)))->var();
+            if(!is_array($declaredChildren)) {
+                throw new TypeException(
+                    (new Message('Expecting a file-return array file, %type% provided'))
+                        ->code('%type%', get_debug_type($declaredChildren))
+                );
+            }
             foreach ($declaredChildren as $k => $v) {
                 if (!in_array($v, $children)) {
                     unset($declaredChildren[$k]);
