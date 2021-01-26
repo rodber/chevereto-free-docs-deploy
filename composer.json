@@ -3,10 +3,12 @@
     "description": "A VuePress documentation deploy",
     "type": "project",
     "license": "MIT",
-    "authors": [{
-        "name": "Rodolfo Berrios",
-        "email": "rodolfo@chevere.org"
-    }],
+    "authors": [
+        {
+            "name": "Rodolfo Berrios",
+            "email": "rodolfo@chevere.org"
+        }
+    ],
     "autoload": {
         "files": [
             "src/functions.php"
@@ -16,6 +18,6 @@
         }
     },
     "require": {
-        "chevere/chevere": "dev-master"
+        "chevere/chevere": "dev-main"
     }
 }
