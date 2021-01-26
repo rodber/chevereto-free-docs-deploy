@@ -95,7 +95,7 @@ jobs:
         env:
           ACCESS_TOKEN: ${{ secrets.REPO_HOSTING_ACCESS_TOKEN }}
           TARGET_REPO: ${{ secrets.REPO_HOSTING }}
-          TARGET_BRANCH: master
+          TARGET_BRANCH: main
           BUILD_SCRIPT: yarn && yarn build
           BUILD_DIR: docs/.vuepress/dist/
           CNAME: ${{ secrets.CNAME }}

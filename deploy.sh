@@ -28,7 +28,7 @@ if [ "$2" = 'true' ]; then
             git clone $GIT_DOCS
         else
             git fetch --all
-            git reset --hard origin/master
+            git reset --hard origin/main
             cd -
         fi
     else
@@ -67,7 +67,8 @@ if [ "$1" = 'prod' ]; then
     git init
     git add -A
     git commit -m 'deploy'
-    git push -f $GIT_HOSTING master
+    git branch -M main
+    git push -f $GIT_HOSTING main
 
     cd -
 fi
