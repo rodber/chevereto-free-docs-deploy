@@ -78,9 +78,13 @@ class Modules
             'ariaLabel' => $title . ' Menu'
         ];
         foreach ($nodes as $nodeName) {
+            $link = $this->getUsableNode($path . $nodeName);
+            if (count(explode('/', $link)) > 3) {
+                continue;
+            }
             $array['items'][] = $this->getNavLink(
                 $this->getTitle($nodeName),
-                $this->getUsableNode($path . $nodeName)
+                $link
             );
         }
 
