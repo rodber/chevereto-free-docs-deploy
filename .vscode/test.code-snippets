@@ -1,0 +1,27 @@
+{
+    "test": {
+        "description": "Chevere test",
+        "prefix": "test",
+        "body": [
+            "<?php",
+            "namespace Chevere\\Tests;",
+            "",
+            "use PHPUnit\\Framework\\TestCase;",
+            "",
+            "final class $TM_FILENAME_BASE extends TestCase",
+            "{",
+            "\t$0",
+            "}"
+        ]
+    },
+    "test-method": {
+        "description": "Chevere test method",
+        "prefix": "test-method",
+        "body": [
+            "public function test${1:Name}(): void",
+            "{",
+            "\t$0",
+            "}"
+        ]
+    },
+}

@@ -21,6 +21,7 @@
         "chevere/chevere": "dev-main"
     },
     "require-dev": {
-        "symplify/easy-coding-standard": "^9.1"
+        "symplify/easy-coding-standard": "^9.1",
+        "phpunit/phpunit": "^9.5"
     }
 }
