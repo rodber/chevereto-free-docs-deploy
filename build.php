@@ -1,13 +1,22 @@
 <?php
 
-declare(strict_types=1);
+/*
+ * This file is part of Chevere.
+ *
+ * (c) Rodolfo Berrios <rodolfo@chevere.org>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
-use DocsDeploy\MarkdownIterator;
-use DocsDeploy\Modules;
+declare(strict_types=1);
 
 use function Chevere\Components\Filesystem\dirForPath;
 use function Chevere\Components\Filesystem\fileForPath;
 use function Chevere\Components\Writer\streamFor;
+use Chevere\Components\Writer\StreamWriter;
+use DocsDeploy\MarkdownIterator;
+use DocsDeploy\Modules;
 use function DocsDeploy\toModuleExport;
 
 require 'vendor/autoload.php';
@@ -15,19 +24,20 @@ require 'vendor/autoload.php';
 $docs = getcwd() . '/docs/';
 $sortNavFile = fileForPath($docs . 'sortNav.php');
 $docsDir = dirForPath($docs);
-$iterator = new MarkdownIterator($docsDir);
+$logger = new StreamWriter(streamFor('php://stdout', 'w'));
+$iterator = new MarkdownIterator($docsDir, $logger);
 $sortNav = $sortNavFile->exists()
     ? include $sortNavFile->path()->toString()
     : [];
 $modules = new Modules($iterator, $sortNav);
 $modules->execute();
-$vuePressPath = "$docs.vuepress/";
+$vuePressPath = "${docs}.vuepress/";
 foreach ([
     'nav/en.js' => $modules->nav(),
     'sidebar/en.js' => $modules->sidebar(),
 ] as $file => $module) {
     $file = fileForPath($vuePressPath . $file);
-    if (!$file->exists()) {
+    if (! $file->exists()) {
         $file->create();
     }
     $file->put(toModuleExport($module));
