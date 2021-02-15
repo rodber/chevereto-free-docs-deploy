@@ -1,18 +1,23 @@
 <?php
 
+/*
+ * This file is part of Chevere.
+ *
+ * (c) Rodolfo Berrios <rodolfo@chevere.org>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 namespace DocsDeploy;
 
-use Chevere\Components\Filesystem\Path;
 use Chevere\Interfaces\Filesystem\DirInterface;
-use Chevere\Interfaces\Filesystem\PathInterface;
 use RecursiveDirectoryIterator;
 use RecursiveFilterIterator;
 use RecursiveIteratorIterator;
 use UnexpectedValueException;
-use DocsDeploy\Flags;
-use Exception;
 
 class MarkdownIterator
 {
@@ -38,6 +43,7 @@ class MarkdownIterator
         $this->dirIterator = $this->getRecursiveDirectoryIterator($dir->path()->toString());
         $this->filterIterator = $this->getRecursiveFilterIterator($this->dirIterator);
         $this->recursiveIterator = new RecursiveIteratorIterator($this->filterIterator);
+
         try {
             $this->recursiveIterator->rewind();
         } catch (UnexpectedValueException $e) {
@@ -76,11 +82,12 @@ class MarkdownIterator
                 $root = '/' . $explode[0] . '/';
                 $node = substr($path, strlen($root) - 1);
             }
-            if ($node == false) {
+            if ($node === false) {
                 $this->recursiveIterator->next();
+
                 continue;
             }
-            if (!isset($this->flagged[$root])) {
+            if (! isset($this->flagged[$root])) {
                 $flags = new Flags($root);
             } else {
                 $flags = $this->flagged[$root];

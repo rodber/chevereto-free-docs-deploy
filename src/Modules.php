@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of Chevere.
+ *
+ * (c) Rodolfo Berrios <rodolfo@chevere.org>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 declare(strict_types=1);
 
 namespace DocsDeploy;
@@ -28,7 +37,7 @@ class Modules
         $this->sortNav = $sortNav;
     }
 
-    public function withAddedNavLink(string $name, string $link): Modules
+    public function withAddedNavLink(string $name, string $link): self
     {
         $new = clone $this;
         $new->links[$name] = $link;
@@ -38,7 +47,7 @@ class Modules
 
     public function execute(): void
     {
-        $sortedNav = (new SortArray($this->markdownIterator->hierarchy(), $this->sortNav))->toArray();
+        $sortedNav = sortArray($this->markdownIterator->hierarchy(), $this->sortNav);
         foreach ($sortedNav as $path => $nodes) {
             asort($nodes);
             if ($path !== '/') {
@@ -56,7 +65,7 @@ class Modules
             $this->nav[] = $this->getNavLink($name, $link);
         }
     }
-    
+
     public function nav(): array
     {
         return $this->nav;
@@ -67,6 +76,14 @@ class Modules
         return $this->sidebar;
     }
 
+    public function getUsableNode(string $node): string
+    {
+        return strtr($node, [
+            'README.md' => '',
+            '.md' => '',
+        ]);
+    }
+
     private function getNav(string $path, array $nodes): array
     {
         $title = $this->getTitle($path);
@@ -75,7 +92,7 @@ class Modules
         }
         $array = [
             'text' => $title,
-            'ariaLabel' => $title . ' Menu'
+            'ariaLabel' => $title . ' Menu',
         ];
         foreach ($nodes as $nodeName) {
             $link = $this->getUsableNode($path . $nodeName);
@@ -91,20 +108,20 @@ class Modules
         return $array;
     }
 
-    private function getSidebar(string $path, array $nodes): array|string
+    private function getSidebar(string $path, array $nodes): array | string
     {
         $title = $this->getTitle($path);
-        if (!$this->markdownIterator->flagged()[$path]->hasReadme()) {
+        if (! $this->markdownIterator->flagged()[$path]->hasReadme()) {
             return [];
         }
-        if (!$this->markdownIterator->flagged()[$path]->hasNested()) {
+        if (! $this->markdownIterator->flagged()[$path]->hasNested()) {
             return [$this->getSidebarFor(
                 $title,
                 $this->getNodesChildren($path, $nodes)
             )];
         }
-        $sidebarPath= $this->markdownIterator->dir()->path()->getChild(ltrim($path, '/') . 'sidebar.php');
-        if($sidebarPath->exists()) {
+        $sidebarPath = $this->markdownIterator->dir()->path()->getChild(ltrim($path, '/') . 'sidebar.php');
+        if ($sidebarPath->exists()) {
             return include $sidebarPath->toString();
         }
         $sidebar = [];
@@ -118,7 +135,7 @@ class Modules
                 $this->getNodesChildren($path, $nestedNodes)
             );
             $sidebar[] = empty($getSidebar) ? 'auto' : $getSidebar;
-        };
+        }
 
         return $sidebar;
     }
@@ -127,7 +144,7 @@ class Modules
     {
         return [
             'text' => $name,
-            'link' => $link
+            'link' => $link,
         ];
     }
 
@@ -138,6 +155,7 @@ class Modules
         foreach ($nodes as $node) {
             if ($node === '') {
                 $hasReadme = true;
+
                 continue;
             }
             $children[] = $this->getUsableNode($node);
@@ -149,14 +167,14 @@ class Modules
         $childrenFile = new File($targetPath->getChild('children.php'));
         if ($childrenFile->exists()) {
             $declaredChildren = (new FilePhpReturn(new FilePhp($childrenFile)))->var();
-            if(!is_array($declaredChildren)) {
+            if (! is_array($declaredChildren)) {
                 throw new TypeException(
                     (new Message('Expecting a file-return array file, %type% provided'))
                         ->code('%type%', get_debug_type($declaredChildren))
                 );
             }
             foreach ($declaredChildren as $k => $v) {
-                if (!in_array($v, $children)) {
+                if (! in_array($v, $children, true)) {
                     unset($declaredChildren[$k]);
                 }
             }
@@ -188,7 +206,7 @@ class Modules
         return [
             'title' => $title,
             'collapsable' => false,
-            'children' => $children
+            'children' => $children,
         ];
     }
 
@@ -197,15 +215,7 @@ class Modules
         return ucwords(strtr($name, [
             '/' => '',
             '-' => ' ',
-            '.md' => ''
+            '.md' => '',
         ]));
-    }
-
-    public function getUsableNode(string $node): string
-    {
-        return strtr($node, [
-            'README.md' => '',
-            '.md' => ''
-        ]);
     }
 }
