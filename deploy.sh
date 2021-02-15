@@ -25,14 +25,14 @@ if [ "$2" = 'true' ]; then
         if [ "$(git config --get remote.origin.url)" != "$GIT_DOCS" ]; then
             echo "Docs repo changed!"
             rm -rf -- "$(pwd -P)" && cd ..
-            git clone $GIT_DOCS
+            git clone $GIT_DOCS docs
         else
             git fetch --all
             git reset --hard origin/main
             cd -
         fi
     else
-        git clone $GIT_DOCS
+        git clone $GIT_DOCS docs
     fi
 else
     echo 'Skipping docs sourcing...'
