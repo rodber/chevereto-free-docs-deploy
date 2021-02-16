@@ -19,18 +19,18 @@ class Flags
 
     private bool $hasReadme = false;
 
-    public function withNested(): self
+    public function withNested(bool $flag): self
     {
         $new = clone $this;
-        $new->hasNested = true;
+        $new->hasNested = $flag;
 
         return $new;
     }
 
-    public function withReadme(): self
+    public function withReadme(bool $flag): self
     {
         $new = clone $this;
-        $new->hasReadme = true;
+        $new->hasReadme = $flag;
 
         return $new;
     }

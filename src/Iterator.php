@@ -18,6 +18,7 @@ use Chevere\Interfaces\Writer\WriterInterface;
 use RecursiveDirectoryIterator;
 use RecursiveFilterIterator;
 use RecursiveIteratorIterator;
+use SplFileInfo;
 use UnexpectedValueException;
 
 final class Iterator
@@ -32,7 +33,7 @@ final class Iterator
 
     private RecursiveIteratorIterator $recursiveIterator;
 
-    private array $hierarchy = [];
+    private array $contents = [];
 
     private string $root;
 
@@ -41,7 +42,7 @@ final class Iterator
     /**
      * @var Flags[]
      */
-    private array $flagged = [];
+    private array $flags = [];
 
     public function __construct(DirInterface $dir, WriterInterface $writer)
     {
@@ -50,18 +51,21 @@ final class Iterator
         $this->writer = $writer;
         $this->dirIterator = $this->getRecursiveDirectoryIterator($dir->path()->toString());
         $this->filterIterator = $this->getRecursiveFilterIterator($this->dirIterator);
-        $this->recursiveIterator = new RecursiveIteratorIterator($this->filterIterator);
+        $this->recursiveIterator = new RecursiveIteratorIterator($this->filterIterator, RecursiveIteratorIterator::SELF_FIRST);
         $this->chop = strlen($this->dir->path()->toString());
 
         try {
             $this->recursiveIterator->rewind();
-        } catch (UnexpectedValueException $e) {
+        }
+        // @codeCoverageIgnoreStart
+        catch (UnexpectedValueException $e) {
             $this->writer->write(
                 'Unable to rewind iterator: ' .
                 $e->getMessage() . "\n\n" .
                 '🤔 Maybe try with user privileges?'
             );
         }
+        // @codeCoverageIgnoreEnd
 
         $this->writer->write('🎾 Iterating ' . $dir->path()->toString() . "\n\n");
         $this->iterate();
@@ -72,23 +76,27 @@ final class Iterator
         return $this->dir;
     }
 
-    public function hierarchy(): array
+    public function contents(): array
     {
-        return $this->hierarchy;
+        return $this->contents;
     }
 
-    public function flagged(): array
+    /**
+     * @return Flags[]
+     */
+    public function flags(): array
     {
-        return $this->flagged;
+        return $this->flags;
     }
 
     private function iterate(): void
     {
         while ($this->recursiveIterator->valid()) {
-            unset($this->root, $this->node);
-            $path = $this->recursiveIterator->current()->getPathName();
-            $this->writer->write("- ${path}\n");
-            $this->setRootNode($path);
+            unset($this->path, $this->root, $this->node);
+            /** @var SplFileinfo $file */
+            $file = $this->recursiveIterator->current();
+            $this->writer->write('- ' . $file->getPathname() . "\n");
+            $this->setRootNode($file);
             if ($this->node === false) {
                 $this->recursiveIterator->next();
 
@@ -98,32 +106,37 @@ final class Iterator
             if ($this->node === 'README.md') {
                 $flags = $flags->withReadme(true);
             }
-            $this->hierarchy[$this->root][] = $this->node;
-            $this->flagged[$this->root] = $flags;
+            $this->contents[$this->root][] = $this->node;
+            $this->flags[$this->root] = $flags;
             $this->recursiveIterator->next();
+        }
+        if (isset($this->contents['/']) && count($this->contents) > 1) {
+            $this->flags['/'] = $this->flags['/']
+                ->withNested(true);
         }
     }
 
-    private function setRootNode(string $path): void
+    private function setRootNode(SplFileInfo $node): void
     {
-        $path = substr($path, $this->chop);
-        $explode = explode('/', $path);
+        $path = $node->getPathname();
+        $this->path = substr($path, $this->chop);
         $this->root = '/';
-        $this->node = $explode[0];
-        if (isset($explode[1])) {
-            $this->root = '/' . $explode[0] . '/';
-            $this->node = substr($path, strlen($this->root) - 1);
+        $this->node = basename($this->path);
+        if ($node->isDir()) {
+            $this->node = $this->node . '/';
+        }
+        if (str_contains($this->path, '/')) {
+            $this->root = '/' . dirname($this->path) . '/';
         }
     }
 
     private function getFlags(): Flags
     {
-        $flags = $this->flagged[$this->root] ?? null;
-        if ($flags === null) {
-            $flags = new Flags($this->root);
-        }
-        if (strpos($this->node, '/') !== false) {
-            $flags = $flags->withNested(true);
+        $flags = $this->flags[$this->root] ?? new Flags($this->root);
+        if (str_contains(trim($this->root, '/'), '/')) {
+            $parent = dirname($this->root) . '/';
+            $this->flags[$parent] = $this->flags[$parent]
+                ->withNested(isset($this->flags[$parent]));
         }
 
         return $flags;
@@ -133,8 +146,8 @@ final class Iterator
     {
         return new RecursiveDirectoryIterator(
             $path,
-            RecursiveDirectoryIterator::SKIP_DOTS
-            | RecursiveDirectoryIterator::KEY_AS_PATHNAME
+            RecursiveDirectoryIterator::SKIP_DOTS |
+            RecursiveDirectoryIterator::KEY_AS_PATHNAME
         );
     }
 
