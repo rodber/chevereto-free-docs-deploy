@@ -11,10 +11,6 @@
 
 declare(strict_types=1);
 
-namespace Chevere\Tests;
-
-use PHPUnit\Framework\TestCase;
-
-final class MarkdownIteratorTest extends TestCase
+interface FolderInterface
 {
 }

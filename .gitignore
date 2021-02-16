@@ -1,4 +1,6 @@
+/build
 /docs
 /node_modules
 /vendor
 /composer.lock
+/.phpunit.cache
