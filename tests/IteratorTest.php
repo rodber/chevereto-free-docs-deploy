@@ -16,6 +16,7 @@ namespace Chevere\Tests;
 use function Chevere\Components\Filesystem\dirForPath;
 use function Chevere\Components\Writer\streamTemp;
 use Chevere\Components\Writer\StreamWriter;
+use Chevere\Interfaces\Writer\WriterInterface;
 use DocsDeploy\Iterator;
 use PHPUnit\Framework\TestCase;
 
@@ -34,10 +35,10 @@ final class IteratorTest extends TestCase
         $iterator = $this->getIterator('');
         $this->assertSame(
             [
-                'files-readme-sub-folders/',
+                'README.md',
                 'files/',
                 'files-readme/',
-                'README.md',
+                'files-readme-sub-folders/',
                 'sub-folders/',
             ],
             $iterator->contents()['/']
@@ -52,8 +53,8 @@ final class IteratorTest extends TestCase
         $iterator = $this->getIterator('files/');
         $this->assertSame(
             [
-                'file-2.md',
                 'file-1.md',
+                'file-2.md',
             ],
             $iterator->contents()['/']
         );
@@ -68,12 +69,13 @@ final class IteratorTest extends TestCase
         $this->assertSame(
             [
                 'README.md',
-                'file-2.md',
                 'file-1.md',
+                'file-2.md',
             ],
             $iterator->contents()['/']
         );
         $flags = $iterator->flags()['/'];
+
         $this->assertFalse($flags->hasNested());
         $this->assertTrue($flags->hasReadme());
     }
@@ -83,10 +85,10 @@ final class IteratorTest extends TestCase
         $iterator = $this->getIterator('files-readme-sub-folders/');
         $this->assertSame(
             [
-                'folder-1/',
-                'folder-2/',
                 'README.md',
                 'file-1.md',
+                'folder-1/',
+                'folder-2/',
             ],
             $iterator->contents()['/']
         );
@@ -110,11 +112,11 @@ final class IteratorTest extends TestCase
         $this->assertFalse($flags->hasReadme());
     }
 
-    private function getIterator(string $path): Iterator
+    private function getIterator(string $path, WriterInterface $writer = null): Iterator
     {
         return new Iterator(
             dirForPath(__DIR__ . '/_resources/docs/' . $path),
-            new StreamWriter(streamTemp(''))
+            $writer ?? new StreamWriter(streamTemp(''))
         );
     }
 }

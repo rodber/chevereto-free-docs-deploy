@@ -18,9 +18,14 @@ function toModuleExport(array $array): string
     return 'module.exports = ' . json_encode($array, JSON_PRETTY_PRINT);
 }
 
-function sortArray(array $module, array $order = []): array
+/**
+ * Sorts a one-dimension array with order keys.
+ */
+function sortArray(array $array, array $order = []): array
 {
-    $availableKeys = array_intersect($order, array_keys($module));
+    $flip = array_flip($array);
+    $availableKeys = array_intersect($order, $array);
+    $sorted = array_merge(array_flip($availableKeys), $flip);
 
-    return array_merge(array_flip($availableKeys), $module);
+    return array_keys($sorted);
 }

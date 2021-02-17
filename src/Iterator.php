@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace DocsDeploy;
 
+use function Chevere\Components\Filesystem\filePhpReturnForPath;
 use Chevere\Interfaces\Filesystem\DirInterface;
 use Chevere\Interfaces\Writer\WriterInterface;
 use RecursiveDirectoryIterator;
@@ -23,6 +24,10 @@ use UnexpectedValueException;
 
 final class Iterator
 {
+    public const NAMING = [];
+
+    public const SORTING = ['README.md'];
+
     private DirInterface $dir;
 
     private WriterInterface $writer;
@@ -38,6 +43,8 @@ final class Iterator
     private string $root;
 
     private string $node;
+
+    private SplFileinfo $current;
 
     /**
      * @var Flags[]
@@ -92,42 +99,79 @@ final class Iterator
     private function iterate(): void
     {
         while ($this->recursiveIterator->valid()) {
-            unset($this->path, $this->root, $this->node);
-            /** @var SplFileinfo $file */
-            $file = $this->recursiveIterator->current();
-            $this->writer->write('- ' . $file->getPathname() . "\n");
-            $this->setRootNode($file);
-            $flags = $this->getFlags();
-            if ($this->node === 'README.md') {
-                $flags = $flags->withReadme(true);
-            }
+            $this->current = $this->recursiveIterator->current();
+            $this->writer->write('- ' . $this->current->getPathname() . "\n");
+            $this->setRootNode();
+            $this->setFlags();
             $this->contents[$this->root][] = $this->node;
-            $this->flags[$this->root] = $flags;
             $this->recursiveIterator->next();
         }
-        if (isset($this->contents['/']) && count($this->contents) > 1) {
-            $this->flags['/'] = $this->flags['/']
-                ->withNested(true);
+        $this->setRootFlags();
+        $this->processFileFlags();
+    }
+
+    private function processFileFlags(): void
+    {
+        // xdd(array_keys($this->contents));
+        foreach ($this->contents as $key => $nodes) {
+            $this->flags[$key] = $this->getDirFlags(
+                $this->flags[$key],
+            );
+            $this->contents[$key] = sortArray($nodes, $this->flags[$key]->sorting());
         }
     }
 
-    private function setRootNode(SplFileInfo $node): void
+    private function setRootFlags(): void
     {
-        $path = $node->getPathname();
-        $this->path = substr($path, $this->chop);
-        $this->root = '/';
-        $this->node = basename($this->path);
-        if ($node->isDir()) {
-            $this->node = $this->node . '/';
+        if (isset($this->contents['/'])) {
+            $this->flags['/'] = $this->flags['/']
+                ->withNested(count($this->contents) > 1);
         }
-        if (str_contains($this->path, '/')) {
-            $this->root = '/' . dirname($this->path) . '/';
+    }
+
+    private function setFlags(): void
+    {
+        $flags = $this->getFlags();
+        if ($this->node === 'README.md') {
+            $flags = $flags->withReadme(true);
+        }
+        $this->flags[$this->root] = $flags;
+    }
+
+    private function getDirFlags(Flags $flags): Flags
+    {
+        foreach (['naming', 'sorting'] as $flagger) {
+            $filepath = $flags->dir()->path()->getChild($flagger . '.php');
+            $return = null;
+            if ($filepath->exists()) {
+                $filePhp = filePhpReturnForPath($filepath->toString())->withStrict(false);
+                $return = $filePhp->var();
+            }
+            $values[$flagger] = $return;
+        }
+
+        return $flags
+            ->withNaming($values['naming'] ?? self::NAMING)
+            ->withSorting($values['sorting'] ?? self::SORTING);
+    }
+
+    private function setRootNode(): void
+    {
+        $this->root = '/';
+        $path = substr($this->current->getPathname(), $this->chop);
+        $this->node = basename($path);
+        if ($this->current->isDir()) {
+            $this->node .= '/';
+        }
+        if (str_contains($path, '/')) {
+            $this->root = '/' . dirname($path) . '/';
         }
     }
 
     private function getFlags(): Flags
     {
-        $flags = $this->flags[$this->root] ?? new Flags($this->root);
+        $flags = $this->flags[$this->root]
+            ?? new Flags($this->dir()->getChild(ltrim($this->root, '/')));
         if (str_contains(trim($this->root, '/'), '/')) {
             $parent = dirname($this->root) . '/';
             $this->flags[$parent] = $this->flags[$parent]
