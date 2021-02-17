@@ -58,7 +58,7 @@ class Modules
         foreach ($this->links as $name => $link) {
             $this->nav[] = $this->getNavLink($name, $link);
         }
-        xdd($this->nav);
+        // xdd($this->nav);
         // if (isset($this->sidebar['/'])) {
         //     $rootSidebar = $this->sidebar['/'];
         //     unset($this->sidebar['/']);
@@ -100,22 +100,30 @@ class Modules
         ];
 
         if ($flags->hasNested()) {
+            $files = [];
             foreach ($contents as $subNode) {
                 if (! str_ends_with($subNode, '/')) {
+                    $files[] = $subNode;
+
                     continue;
                 }
-                $subRoot = $rootNode . $subNode;
-                $subFlags = $this->iterator->flags()[$subRoot] ?? null;
-                $subContents = $this->iterator->contents()[$subRoot];
-                $items = [];
-                $items[] = $this->getItems($subRoot, $subFlags, $subContents);
-                $return['items'][] = [
-                    'text' => $flags->naming()[$subNode] ?? $this->getTitle($subNode),
-                    'items' => $items,
-                ];
             }
+            if ($files === []) {
+                foreach ($contents as $subNode) {
+                    $subRoot = $rootNode . $subNode;
+                    $subFlags = $this->iterator->flags()[$subRoot] ?? null;
+                    $subContents = $this->iterator->contents()[$subRoot];
+                    $items = [];
+                    $items = $this->getItems($subRoot, $subFlags, $subContents);
+                    $return['items'][] = [
+                        'text' => $flags->naming()[$subNode] ?? $this->getTitle($subNode),
+                        'items' => $items,
+                    ];
+                }
 
-            return $return;
+                return $return;
+            }
+            $contents = $files;
         }
 
         $return['items'] = $this->getItems($rootNode, $flags, $contents);
