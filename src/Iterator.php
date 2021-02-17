@@ -97,11 +97,6 @@ final class Iterator
             $file = $this->recursiveIterator->current();
             $this->writer->write('- ' . $file->getPathname() . "\n");
             $this->setRootNode($file);
-            if ($this->node === false) {
-                $this->recursiveIterator->next();
-
-                continue;
-            }
             $flags = $this->getFlags();
             if ($this->node === 'README.md') {
                 $flags = $flags->withReadme(true);
