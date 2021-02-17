@@ -16,14 +16,15 @@ namespace DocsDeploy;
 use Chevere\Components\Filesystem\File;
 use Chevere\Components\Filesystem\FilePhp;
 use Chevere\Components\Filesystem\FilePhpReturn;
+use function Chevere\Components\Filesystem\filePhpReturnForPath;
 use Chevere\Components\Message\Message;
 use Chevere\Exceptions\Core\TypeException;
 
 class Modules
 {
-    private MarkdownIterator $markdownIterator;
+    private Iterator $iterator;
 
-    private array $sortNav;
+    private array $navSorting = [];
 
     private array $links = [];
 
@@ -31,10 +32,14 @@ class Modules
 
     private array $sidebar = [];
 
-    public function __construct(MarkdownIterator $markdownIterator, array $sortNav)
+    public function __construct(Iterator $iterator)
     {
-        $this->markdownIterator = $markdownIterator;
-        $this->sortNav = $sortNav;
+        $this->iterator = $iterator;
+        $navSortingPath = $iterator->dir()->path()->getChild('childSorting.php');
+        if ($navSortingPath->exists()) {
+            $navSorting = filePhpReturnForPath($navSortingPath->toString());
+            $this->navSorting = $navSorting->var();
+        }
     }
 
     public function withAddedNavLink(string $name, string $link): self
@@ -47,7 +52,7 @@ class Modules
 
     public function execute(): void
     {
-        $sortedNav = sortArray($this->markdownIterator->hierarchy(), $this->sortNav);
+        $sortedNav = sortArray($this->iterator->contents(), $this->navSorting);
         foreach ($sortedNav as $path => $nodes) {
             asort($nodes);
             if ($path !== '/') {
@@ -87,7 +92,7 @@ class Modules
     private function getNav(string $path, array $nodes): array
     {
         $title = $this->getTitle($path);
-        if ($this->markdownIterator->flagged()[$path]->hasReadme()) {
+        if ($this->iterator->flags()[$path]->hasReadme()) {
             return $this->getNavLink($title, $path);
         }
         $array = [
@@ -111,16 +116,16 @@ class Modules
     private function getSidebar(string $path, array $nodes): array | string
     {
         $title = $this->getTitle($path);
-        if (! $this->markdownIterator->flagged()[$path]->hasReadme()) {
+        if (! $this->iterator->flags()[$path]->hasReadme()) {
             return [];
         }
-        if (! $this->markdownIterator->flagged()[$path]->hasNested()) {
+        if (! $this->iterator->flags()[$path]->hasNested()) {
             return [$this->getSidebarFor(
                 $title,
                 $this->getNodesChildren($path, $nodes)
             )];
         }
-        $sidebarPath = $this->markdownIterator->dir()->path()->getChild(ltrim($path, '/') . 'sidebar.php');
+        $sidebarPath = $this->iterator->dir()->path()->getChild(ltrim($path, '/') . 'sidebar.php');
         if ($sidebarPath->exists()) {
             return include $sidebarPath->toString();
         }
@@ -163,7 +168,7 @@ class Modules
         if ($hasReadme) {
             $children = array_merge([''], $children);
         }
-        $targetPath = $this->markdownIterator->dir()->path()->getChild(ltrim($path, '/'));
+        $targetPath = $this->iterator->dir()->path()->getChild(ltrim($path, '/'));
         $childrenFile = new File($targetPath->getChild('children.php'));
         if ($childrenFile->exists()) {
             $declaredChildren = (new FilePhpReturn(new FilePhp($childrenFile)))->var();

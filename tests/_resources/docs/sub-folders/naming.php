@@ -11,6 +11,7 @@
 
 declare(strict_types=1);
 
-interface FolderInterface
-{
-}
+return [
+    'folder-1/' => 'Folder 1',
+    'folder-2/' => 'Folder 2',
+];

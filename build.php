@@ -15,7 +15,7 @@ use function Chevere\Components\Filesystem\dirForPath;
 use function Chevere\Components\Filesystem\fileForPath;
 use function Chevere\Components\Writer\streamFor;
 use Chevere\Components\Writer\StreamWriter;
-use DocsDeploy\MarkdownIterator;
+use DocsDeploy\Iterator;
 use DocsDeploy\Modules;
 use function DocsDeploy\toModuleExport;
 
@@ -25,7 +25,7 @@ $docs = getcwd() . '/docs/';
 $sortNavFile = fileForPath($docs . 'sortNav.php');
 $docsDir = dirForPath($docs);
 $logger = new StreamWriter(streamFor('php://stdout', 'w'));
-$iterator = new MarkdownIterator($docsDir, $logger);
+$iterator = new Iterator($docsDir, $logger);
 $sortNav = $sortNavFile->exists()
     ? include $sortNavFile->path()->toString()
     : [];
