@@ -16,15 +16,12 @@ namespace DocsDeploy;
 use Chevere\Components\Filesystem\File;
 use Chevere\Components\Filesystem\FilePhp;
 use Chevere\Components\Filesystem\FilePhpReturn;
-use function Chevere\Components\Filesystem\filePhpReturnForPath;
 use Chevere\Components\Message\Message;
 use Chevere\Exceptions\Core\TypeException;
 
 class Modules
 {
     private Iterator $iterator;
-
-    private array $navSorting = [];
 
     private array $links = [];
 
@@ -35,11 +32,6 @@ class Modules
     public function __construct(Iterator $iterator)
     {
         $this->iterator = $iterator;
-        $navSortingPath = $iterator->dir()->path()->getChild('childSorting.php');
-        if ($navSortingPath->exists()) {
-            $navSorting = filePhpReturnForPath($navSortingPath->toString());
-            $this->navSorting = $navSorting->var();
-        }
     }
 
     public function withAddedNavLink(string $name, string $link): self
@@ -52,23 +44,26 @@ class Modules
 
     public function execute(): void
     {
-        $sortedNav = sortArray($this->iterator->contents(), $this->navSorting);
-        foreach ($sortedNav as $path => $nodes) {
-            asort($nodes);
-            if ($path !== '/') {
-                $this->nav[] = $this->getNav($path, $nodes);
+        $mainContents = $this->iterator->contents()['/'];
+        foreach ($mainContents as $node) {
+            if (str_ends_with($node, '/')) {
+                $this->nav[] = $this->getNav($node);
+            } else {
+                continue;
             }
-            $getSidebar = $this->getSidebar($path, $nodes);
-            $this->sidebar[$path] = empty($getSidebar) ? 'auto' : $getSidebar;
-        }
-        if (isset($this->sidebar['/'])) {
-            $rootSidebar = $this->sidebar['/'];
-            unset($this->sidebar['/']);
-            $this->sidebar['/'] = $rootSidebar;
+
+            // $getSidebar = $this->getSidebar($path, $node);
+            // $this->sidebar[$path] = empty($getSidebar) ? 'auto' : $getSidebar;
         }
         foreach ($this->links as $name => $link) {
             $this->nav[] = $this->getNavLink($name, $link);
         }
+        xdd($this->nav);
+        // if (isset($this->sidebar['/'])) {
+        //     $rootSidebar = $this->sidebar['/'];
+        //     unset($this->sidebar['/']);
+        //     $this->sidebar['/'] = $rootSidebar;
+        // }
     }
 
     public function nav(): array
@@ -89,28 +84,56 @@ class Modules
         ]);
     }
 
-    private function getNav(string $path, array $nodes): array
+    private function getNav(string $node): array
     {
-        $title = $this->getTitle($path);
-        if ($this->iterator->flags()[$path]->hasReadme()) {
-            return $this->getNavLink($title, $path);
+        $title = $this->iterator->flags()['/']->naming()[$node]
+            ?? $this->getTitle($node);
+        $rootNode = "/${node}";
+        $flags = $this->iterator->flags()[$rootNode];
+        $contents = $this->iterator->contents()[$rootNode];
+        if ($flags->hasReadme()) {
+            return $this->getNavLink($title, $rootNode);
         }
-        $array = [
+        $return = [
             'text' => $title,
             'ariaLabel' => $title . ' Menu',
         ];
-        foreach ($nodes as $nodeName) {
-            $link = $this->getUsableNode($path . $nodeName);
-            if (count(explode('/', $link)) > 3) {
-                continue;
+
+        if ($flags->hasNested()) {
+            foreach ($contents as $subNode) {
+                if (! str_ends_with($subNode, '/')) {
+                    continue;
+                }
+                $subRoot = $rootNode . $subNode;
+                $subFlags = $this->iterator->flags()[$subRoot] ?? null;
+                $subContents = $this->iterator->contents()[$subRoot];
+                $items = [];
+                $items[] = $this->getItems($subRoot, $subFlags, $subContents);
+                $return['items'][] = [
+                    'text' => $flags->naming()[$subNode] ?? $this->getTitle($subNode),
+                    'items' => $items,
+                ];
             }
-            $array['items'][] = $this->getNavLink(
-                $this->getTitle($nodeName),
-                $link
+
+            return $return;
+        }
+
+        $return['items'] = $this->getItems($rootNode, $flags, $contents);
+
+        return $return;
+    }
+
+    private function getItems(string $rootNode, Flags $flags, array $contents): array
+    {
+        $items = [];
+        foreach ($contents as $node) {
+            $items[] = $this->getNavLink(
+                $flags->naming()[$node] ?? $this->getTitle($node),
+                $this->getUsableNode($rootNode . $node)
             );
         }
 
-        return $array;
+        return $items;
     }
 
     private function getSidebar(string $path, array $nodes): array | string
@@ -217,7 +240,7 @@ class Modules
 
     private function getTitle(string $name): string
     {
-        return ucwords(strtr($name, [
+        return ucfirst(strtr($name, [
             '/' => '',
             '-' => ' ',
             '.md' => '',

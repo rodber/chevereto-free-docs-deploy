@@ -14,8 +14,9 @@ declare(strict_types=1);
 namespace DocsDeploy;
 
 use Chevere\Interfaces\Filesystem\DirInterface;
+use Countable;
 
-class Flags
+class Flags implements Countable
 {
     private DirInterface $dir;
 
@@ -27,6 +28,8 @@ class Flags
 
     private array $sorting = [];
 
+    private int $count = 0;
+
     public function __construct(DirInterface $dir)
     {
         $this->dir = $dir;
@@ -35,6 +38,14 @@ class Flags
     public function dir(): DirInterface
     {
         return $this->dir;
+    }
+
+    public function withAddedMarkdown(): self
+    {
+        $new = clone $this;
+        ++$new->count;
+
+        return $new;
     }
 
     public function withNested(bool $flag): self
@@ -67,6 +78,11 @@ class Flags
         $new->sorting = $sorting;
 
         return $new;
+    }
+
+    public function count(): int
+    {
+        return $this->count;
     }
 
     public function hasNested(): bool

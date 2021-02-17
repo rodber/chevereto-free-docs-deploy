@@ -46,6 +46,23 @@ final class IteratorTest extends TestCase
         $flags = $iterator->flags()['/'];
         $this->assertTrue($flags->hasNested());
         $this->assertTrue($flags->hasReadme());
+        $this->assertSame(
+            [
+                'files/' => 'Archivos',
+                'files-readme/' => 'Archivos Léame',
+            ],
+            $flags->naming()
+        );
+        $this->assertSame(
+            [
+                'README.md',
+                'files/',
+                'files-readme/',
+                'files-readme-sub-folders/',
+                'sub-folders/',
+            ],
+            $flags->sorting()
+        );
     }
 
     public function testFiles(): void
@@ -111,6 +128,19 @@ final class IteratorTest extends TestCase
         $this->assertTrue($flags->hasNested());
         $this->assertFalse($flags->hasReadme());
     }
+
+    // public function testEmptySubFolders(): void
+    // {
+    //     $iterator = $this->getIterator('sub-folders/');
+    //     // xdd($iterator->contents());
+    //     $this->assertSame(
+    //         [],
+    //         $iterator->contents()['/']
+    //     );
+    //     $flags = $iterator->flags()['/'];
+    //     $this->assertTrue($flags->hasNested());
+    //     $this->assertFalse($flags->hasReadme());
+    // }
 
     private function getIterator(string $path, WriterInterface $writer = null): Iterator
     {

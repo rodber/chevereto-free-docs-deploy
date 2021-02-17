@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace DocsDeploy;
 
+use function Chevere\Components\Filesystem\dirForPath;
 use function Chevere\Components\Filesystem\filePhpReturnForPath;
 use Chevere\Interfaces\Filesystem\DirInterface;
 use Chevere\Interfaces\Writer\WriterInterface;
@@ -106,26 +107,33 @@ final class Iterator
             $this->contents[$this->root][] = $this->node;
             $this->recursiveIterator->next();
         }
-        $this->setRootFlags();
-        $this->processFileFlags();
-    }
-
-    private function processFileFlags(): void
-    {
-        // xdd(array_keys($this->contents));
-        foreach ($this->contents as $key => $nodes) {
-            $this->flags[$key] = $this->getDirFlags(
-                $this->flags[$key],
-            );
-            $this->contents[$key] = sortArray($nodes, $this->flags[$key]->sorting());
-        }
-    }
-
-    private function setRootFlags(): void
-    {
         if (isset($this->contents['/'])) {
             $this->flags['/'] = $this->flags['/']
                 ->withNested(count($this->contents) > 1);
+        }
+        $this->stripEmpty();
+        $this->fixContents();
+    }
+
+    private function stripEmpty(): void
+    {
+        foreach ($this->contents as $root => &$nodes) {
+            foreach ($nodes as &$node) {
+                $flags = $this->flags['/' . $node] ?? null;
+                if (isset($flags) && count($flags) === 0) {
+                    $search = array_search($node, $nodes, true);
+                    unset($nodes[$search], $this->contents['/' . $node]);
+                }
+            }
+        }
+    }
+
+    private function fixContents(): void
+    {
+        foreach ($this->contents as $key => $nodes) {
+            $flags = $this->flags[$key];
+            $this->flags[$key] = $this->getDirFlags($flags);
+            $this->contents[$key] = sortArray($nodes, $this->flags[$key]->sorting());
         }
     }
 
@@ -134,6 +142,9 @@ final class Iterator
         $flags = $this->getFlags();
         if ($this->node === 'README.md') {
             $flags = $flags->withReadme(true);
+        }
+        if ($this->current->isFile()) {
+            $flags = $flags->withAddedMarkdown();
         }
         $this->flags[$this->root] = $flags;
     }
@@ -172,10 +183,17 @@ final class Iterator
     {
         $flags = $this->flags[$this->root]
             ?? new Flags($this->dir()->getChild(ltrim($this->root, '/')));
+        $parent = rtrim(dirname($this->root), '/') . '/';
         if (str_contains(trim($this->root, '/'), '/')) {
-            $parent = dirname($this->root) . '/';
             $this->flags[$parent] = $this->flags[$parent]
                 ->withNested(isset($this->flags[$parent]));
+        }
+        if ($this->current->isFile()) {
+            if (! isset($this->flags[$parent])) {
+                $this->flags[$parent] = new Flags(dirForPath($parent));
+            }
+            $this->flags[$parent] = $this->flags[$parent]
+                ->withAddedMarkdown();
         }
 
         return $flags;
@@ -195,6 +213,9 @@ final class Iterator
         return new class($dirIterator) extends RecursiveFilterIterator {
             public function accept(): bool
             {
+                if (str_starts_with($this->current()->getBasename(), '.')) {
+                    return false;
+                }
                 if ($this->hasChildren()) {
                     return true;
                 }
