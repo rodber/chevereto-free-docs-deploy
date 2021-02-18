@@ -178,11 +178,12 @@ class Modules
 
     private function getChild($root, $node, $naming): array | string
     {
-        return $node === ''
-            ? ''
-            : [
-                $root . $node, $naming,
-            ];
+        $return = $root . $node;
+        if ($naming === '' && $node === '') {
+            return $return;
+        }
+
+        return [$return, $naming];
     }
 
     private function getNavLink(string $name, string $link): array
