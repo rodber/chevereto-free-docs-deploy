@@ -1,89 +1,86 @@
 # DocsDeploy
 
-> A VuePress documentation deploy template.
+✨ Este repositorio permite publicar una documentación basada en [VuePress](https://vuepress.vuejs.org/).
 
-It takes a markdown docs repo and generates a VuePress app that can be configured to be automatically published to Github pages.
+- Genera **navbar** y **sidebar** automáticamente
+- Usa convenciones en el sistema de archivos
+- Simplifica el ordenar y nombrar enlaces
 
-## Installation
+En resumen, remueve toda la lata de trabajar con VuePress para que te enfoques en tus documentos.
 
-```sh
-composer install
+## Repositorio markdown
+
+Este repositorio require de un repositorio markdown (ejemplo [chevere/docs](https://github.com/chevere/docs/)).
+
+### Sistema de archivos
+
+- Reconoce carpetas con archivos `.md`.
+- Trabaja con n sub-niveles de profundidad.
+- `README.md` denota indice.
+- `file-1.md` se interpreta como `File 1`.
+
+| Estructura                                                                           | Navegación                 | Barra lateral |
+| ------------------------------------------------------------------------------------ | -------------------------- | ------------- |
+| [Archivos](tests/_resources/docs/files/)                                             | Lista desplegable          | Automática    |
+| [Archivos con leeme](tests/_resources/docs/files-readme/)                            | Enlace                     | Combinada     |
+| [Archivos con leeme y sub-carpetas](tests/_resources/docs/files-readme-sub-folders/) | Enlace                     | Combinada     |
+| [Sub-carpetas](tests/_resources/docs/sub-folders/)                                   | Lista agrupada desplegable | Automática    |
+
+### Banderas
+
+Los archivos `sorting.php` y `naming.php` se utilizan cuando se requieran personalizar los elementos contenidos en una carpeta.
+
+> **Nota**: Declara solamente lo que necesites modificar.
+
+🧐 Al usar banderas se **debe** usar `<archivo>.md` para los documentos y `carpeta/` para las carpetas. Cualquier otro formato **no será reconocido**.
+
+
+#### `sorting.php`
+
+El archivo `sorting.php` permite determinar el ordenamiento de los elementos. Afectará el orden en la barra de navegación y en la barra lateral.
+
+```php
+<?php
+
+return [
+    'README.md',
+    'file-1.md',
+    'folder-1/',
+];
 ```
 
-## Requirements
+#### `naming.php`
 
-* A markdown docs repository (example [chevere/docs](https://github.com/chevere/docs/))
+El archivo `naming.php` permite determinar el nombre de los elementos. Afectará el text en la barra de navegación y en la barra lateral.
 
-## Markdown docs conventions
+```php
+<?php
 
-### .vuepress (docs repo)
+return [
+    'README.md' => 'Intro',
+    'file-1.md' => '-> File 1',
+    'folder-1/' => '📁 Folder 1',
+];
+```
+
+### Carpeta VuePress
+
+La carpeta `/.vuepress/` en el repositorio markdown se require para configurar VuePress. Se usa de la siguiente manera:
 
 - `config-project.js`
-  - It will be injected to the actual build `config.js` used by VuePress.
+  - Inyectara valores de configuración a `config.js` (usada por VuePress).
 - `public/`
-  - For files like logos, icons and manifest in the public folder. For example, `.vuepress/public/logo.svg` will be available at `/logo.svg` in the app
+  - Para archivos públicos como logos, iconos y manifest. Un archivo en `/.vuepress/public/logo.svg` estará disponible en `/logo.svg` al publicar el sistema.
 - `styles/`  
-
-### Tree
-
-```shell
-tree ./ -a -I .git
-./
-├── list --> @1
-│   ├── page-1.md
-│   └── page-2.md
-├── list-index --> @2
-│   ├── page-1.md
-│   ├── page-2.md
-│   ├── page-n.md
-│   └── README.md
-├── nlist --> @3
-│   ├── folder-3-1
-│   │   ├── page.md
-│   │   └── another-page.md
-│   ├── folder-3-2
-│   │   └── page.md
-├── nlist-index --> @4
-│   ├── folder-4-1
-│   │   └── another-page.md
-│   ├── folder-4-2
-│   │   └── page.md
-│   ├── README.md
-├── README.md
-├── sortNav.php <-- To sort the nav
-├── .github
-│   ├── workflows/deploy.yml <-- For automatic deploy
-└── .vuepress
-    ├── config-project.js
-    ├── public
-    │   ├── icons
-    │   │   ├── android-chrome-192x192.png
-    │   │   └── android-chrome-512x512.png
-    │   ├── logo.svg
-    │   └── manifest.json
-    └── styles
-        ├── index.styl
-        └── palette.styl
-```
-
-| Path condition id | `README.md` | Folders | Navbar as      | Sidebar as                            |
-| ----------------- | ----------- | ------- | -------------- | ------------------------------------- |
-| @1 list           | No          | No      | Dropdown       | Auto for each single page             |
-| @2 list-index     | Yes         | No      | Link           | Sidebar with children `['', <page>]`  |
-| @3 nlist          | No          | 1 level | Same as @1 (*) | Same as @1                            |
-| @4 nlist-index    | Yes         | 1 level | Same as @2     | A combined version @2 for each folder |
-
-> **(*)** Case `@3` is **discouraged** (needs to implement nav groups, looks ugly at this time)
+  - Para indicar configuraciones referente al estilo (CSS).
 
 ## Deploying
 
 ### GitHub
 
-Requirements:
+Requires a Github repository for hosting (see Github pages).
 
-* A Github repository for hosting (see Github pages)
-
-Require Secrets (on deploy repo):
+Require Secrets on deploy repo (your fork of this repo):
 
 - `REPO_DOCS` example [`chevere/docs`](https://github.com/chevere/docs/)
 - `REPO_DOCS_ACCESS_TOKEN` token for the repo above
