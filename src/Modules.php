@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace DocsDeploy;
 
+use function Chevere\Components\Filesystem\filePhpReturnForPath;
+
 class Modules
 {
     private Iterator $iterator;
@@ -76,11 +78,15 @@ class Modules
 
     private function setSideFor(string $node): void
     {
+        $side = 'auto';
         $rootNode = "/${node}";
         $flags = $this->iterator->flags()[$rootNode];
         $contents = $this->iterator->contents()[$rootNode];
-        $side = 'auto';
-        if ($flags->hasNested() || $flags->hasReadme()) {
+        $filepath = $flags->dir()->path()->getChild('sidebar.php');
+        if ($filepath->exists()) {
+            $filePhp = filePhpReturnForPath($filepath->toString())->withStrict(false);
+            $side = $filePhp->var();
+        } elseif ($flags->hasNested() || $flags->hasReadme()) {
             $side = $this->getSide($rootNode, $flags, $contents);
         }
         $this->side["/${node}"] = $side;
