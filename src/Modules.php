@@ -55,7 +55,8 @@ class Modules
         foreach ($this->links as $name => $link) {
             $this->nav[] = $this->getNavLink($name, $link);
         }
-        $this->side['/'] = $this->getSide('/', $mainFlags, $mainFiles);
+        //$this->getSide('/', $mainFlags, $mainFiles)
+        $this->side['/'] = 'auto';
     }
 
     public function nav(): array
