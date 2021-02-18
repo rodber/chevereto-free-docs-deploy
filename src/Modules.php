@@ -166,8 +166,9 @@ class Modules
                 $main[] = $this->getChild($rootNode, $usableNode, $naming);
             }
         }
+        $nodeInRoot = ltrim($rootNode, '/');
         array_unshift($items, [
-            'title' => 'MAIN',
+            'title' => $this->iterator->flags()['/']->naming()[$nodeInRoot] ?? $this->getTitle($nodeInRoot),
             'collapsable' => false,
             'children' => $main,
         ]);
