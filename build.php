@@ -24,7 +24,7 @@ require 'vendor/autoload.php';
 $docs = getcwd() . '/docs/';
 $sortNavFile = fileForPath($docs . 'sortNav.php');
 $docsDir = dirForPath($docs);
-$logger = new StreamWriter(streamFor('php://stdout', 'w'));
+$logger = new StreamWriter(streamFor('php://temp', 'w'));
 $iterator = new Iterator($docsDir, $logger);
 $sortNav = $sortNavFile->exists()
     ? include $sortNavFile->path()->toString()
@@ -34,7 +34,7 @@ $modules->execute();
 $vuePressPath = "${docs}.vuepress/";
 foreach ([
     'nav/en.js' => $modules->nav(),
-    'sidebar/en.js' => $modules->sidebar(),
+    'sidebar/en.js' => $modules->side(),
 ] as $file => $module) {
     $file = fileForPath($vuePressPath . $file);
     if (! $file->exists()) {
