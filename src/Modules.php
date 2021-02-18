@@ -38,7 +38,6 @@ class Modules
 
     public function execute(): void
     {
-        $this->side['/'] = 'auto';
         $mainContents = $this->iterator->contents()['/'];
         foreach ($mainContents as $node) {
             if (! str_ends_with($node, '/')) {
@@ -50,6 +49,7 @@ class Modules
         foreach ($this->links as $name => $link) {
             $this->nav[] = $this->getNavLink($name, $link);
         }
+        $this->side['/'] = 'auto';
     }
 
     public function nav(): array
@@ -77,8 +77,7 @@ class Modules
         $contents = $this->iterator->contents()[$rootNode];
         $side = 'auto';
         if ($flags->hasNested() && $flags->hasReadme()) {
-            $side = [];
-            $side[] = $this->getSide($rootNode, $flags, $contents);
+            $side = $this->getSide($rootNode, $flags, $contents);
         }
         $this->side["/${node}"] = $side;
     }
@@ -145,17 +144,26 @@ class Modules
     private function getSide(string $rootNode, Flags $flags, array $contents): array
     {
         $main = [];
-        $groups = [];
         $items = [];
-        foreach ($contents as $subNode) {
-            if (str_ends_with($subNode, '/')) {
+        foreach ($contents as $node) {
+            $usableNode = $this->getUsableNode($node);
+            $naming = $flags->naming()[$node] ?? $this->getTitle($usableNode);
+            if (str_ends_with($node, '/')) {
+                $nodes = $this->iterator->contents()[$rootNode . $node];
+                $children = [];
+                foreach ($nodes as $subNode) {
+                    $usableSubNode = $this->getUsableNode($subNode);
+                    $nodeFlags = $this->iterator->flags()[$rootNode . $node];
+                    $namingSubNode = $nodeFlags->naming()[$subNode] ?? $this->getTitle($usableSubNode);
+                    $children[] = $this->getChild($rootNode . $node, $usableSubNode, $namingSubNode);
+                }
                 $items[] = [
-                    'title' => $subNode,
+                    'title' => $naming,
                     'collapsable' => false,
-                    'children' => $this->iterator->contents()[$rootNode . $subNode],
+                    'children' => $children,
                 ];
             } else {
-                $main[] = $rootNode . $subNode;
+                $main[] = $this->getChild($rootNode, $usableNode, $naming);
             }
         }
         array_unshift($items, [
@@ -165,6 +173,15 @@ class Modules
         ]);
 
         return $items;
+    }
+
+    private function getChild($root, $node, $naming): array | string
+    {
+        return $node === ''
+            ? ''
+            : [
+                $root . $node, $naming,
+            ];
     }
 
     private function getNavLink(string $name, string $link): array
