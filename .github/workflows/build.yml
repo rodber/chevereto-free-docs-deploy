@@ -17,7 +17,7 @@ jobs:
       extensions: opcache, mbstring, ds, pcov
       tools: composer
       ini-values: opcache.enable_cli = 1, precision=16, default_charset='UTF-8', pcov.directory=src
-      key: cache-1608571128502
+      key: cache-1613673233781
     name: PHP ${{ matrix.php-versions }} test on ${{ matrix.operating-system }}
     steps:
       - name: Checkout
