@@ -39,8 +39,12 @@ class Modules
     public function execute(): void
     {
         $mainContents = $this->iterator->contents()['/'];
+        $mainFlags = $this->iterator->flags()['/'];
+        $mainFiles = [];
         foreach ($mainContents as $node) {
             if (! str_ends_with($node, '/')) {
+                $mainFiles[] = $node;
+
                 continue;
             }
             $this->setNavFor($node);
@@ -49,7 +53,7 @@ class Modules
         foreach ($this->links as $name => $link) {
             $this->nav[] = $this->getNavLink($name, $link);
         }
-        $this->side['/'] = 'auto';
+        $this->side['/'] = $this->getSide('/', $mainFlags, $mainFiles);
     }
 
     public function nav(): array
@@ -76,7 +80,7 @@ class Modules
         $flags = $this->iterator->flags()[$rootNode];
         $contents = $this->iterator->contents()[$rootNode];
         $side = 'auto';
-        if ($flags->hasNested() && $flags->hasReadme()) {
+        if ($flags->hasNested() || $flags->hasReadme()) {
             $side = $this->getSide($rootNode, $flags, $contents);
         }
         $this->side["/${node}"] = $side;
@@ -94,9 +98,9 @@ class Modules
 
             return;
         }
-        if (! $flags->hasNested()) {
-            return;
-        }
+        // if (! $flags->hasNested()) {
+        //     return;
+        // }
         $navMenu = [
             'text' => $title,
             'ariaLabel' => $title . ' Menu',
