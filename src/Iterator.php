@@ -133,6 +133,7 @@ final class Iterator
         foreach ($this->contents as $key => $nodes) {
             $flags = $this->flags[$key];
             $this->flags[$key] = $this->getDirFlags($flags);
+            asort($nodes);
             $this->contents[$key] = sortArray($nodes, $this->flags[$key]->sorting());
         }
     }
