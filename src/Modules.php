@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace DocsDeploy;
 
+use function Chevere\Components\Filesystem\filePhpReturnForPath;
+
 class Modules
 {
     private Iterator $iterator;
@@ -39,8 +41,12 @@ class Modules
     public function execute(): void
     {
         $mainContents = $this->iterator->contents()['/'];
+        $mainFlags = $this->iterator->flags()['/'];
+        $mainFiles = [];
         foreach ($mainContents as $node) {
             if (! str_ends_with($node, '/')) {
+                $mainFiles[] = $node;
+
                 continue;
             }
             $this->setNavFor($node);
@@ -49,7 +55,7 @@ class Modules
         foreach ($this->links as $name => $link) {
             $this->nav[] = $this->getNavLink($name, $link);
         }
-        $this->side['/'] = 'auto';
+        $this->side['/'] = $this->getSide('/', $mainFlags, $mainFiles);
     }
 
     public function nav(): array
@@ -72,11 +78,15 @@ class Modules
 
     private function setSideFor(string $node): void
     {
+        $side = 'auto';
         $rootNode = "/${node}";
         $flags = $this->iterator->flags()[$rootNode];
         $contents = $this->iterator->contents()[$rootNode];
-        $side = 'auto';
-        if ($flags->hasNested() && $flags->hasReadme()) {
+        $filepath = $flags->dir()->path()->getChild('sidebar.php');
+        if ($filepath->exists()) {
+            $filePhp = filePhpReturnForPath($filepath->toString())->withStrict(false);
+            $side = $filePhp->var();
+        } elseif ($flags->hasNested() || $flags->hasReadme()) {
             $side = $this->getSide($rootNode, $flags, $contents);
         }
         $this->side["/${node}"] = $side;
@@ -94,9 +104,9 @@ class Modules
 
             return;
         }
-        if (! $flags->hasNested()) {
-            return;
-        }
+        // if (! $flags->hasNested()) {
+        //     return;
+        // }
         $navMenu = [
             'text' => $title,
             'ariaLabel' => $title . ' Menu',

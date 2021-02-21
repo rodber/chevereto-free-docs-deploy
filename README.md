@@ -28,12 +28,11 @@ Este repositorio require de un repositorio markdown (ejemplo [chevere/docs](http
 
 ### Banderas
 
-Los archivos `sorting.php` y `naming.php` se utilizan cuando se requieran personalizar los elementos contenidos en una carpeta.
+Archivos `.php` se utilizan cuando se requieran personalizar los elementos contenidos en una carpeta.
 
 > **Nota**: Declara solamente lo que necesites modificar.
 
 🧐 Al usar banderas se **debe** usar `<archivo>.md` para los documentos y `carpeta/` para las carpetas. Cualquier otro formato **no será reconocido**.
-
 
 #### `sorting.php`
 
@@ -61,6 +60,16 @@ return [
     'file-1.md' => '-> File 1',
     'folder-1/' => '📁 Folder 1',
 ];
+```
+
+#### `sidebar.php`
+
+El archivo `sidebar.php` permite insertar manualmente la barra lateral. Esto se debe usar como último recurso, especialmente cuando se usa una estructura de sistema de archivos no aceptada en las convenciones de este proyecto.
+
+```php
+<?php
+
+return 'auto';
 ```
 
 ### Carpeta VuePress
