@@ -1,5 +1,7 @@
 const project = require('./config-project')
 
+project.theme = 'default-prefers-color-scheme';
+
 if(!project.plugins) {
     project.plugins = [];
 }
