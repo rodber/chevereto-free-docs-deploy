@@ -39,8 +39,14 @@ foreach ([
     $file->put(toModuleExport($module));
 }
 $stylesPath = $vuePressPath . 'styles/';
-$indexProjectStyl = fileForPath($stylesPath . 'index-project.styl');
-if ($indexProjectStyl->exists()) {
-    $indexStyl = streamFor($stylesPath . 'index.styl', 'a');
-    $indexStyl->write("\n\n" . $indexProjectStyl->contents());
+$stylExt = '.styl';
+foreach (['index', 'palette'] as $styl) {
+    $stylDefaultFile = fileForPath($stylesPath . 'default-' . $styl . $stylExt);
+    $stylFile = fileForPath($stylesPath . $styl . $stylExt);
+    if ($stylFile->exists() && $stylDefaultFile->exists()) {
+        $defaults = $stylDefaultFile->contents();
+        $customs = $stylFile->contents();
+        $stream = streamFor($stylFile->path()->toString(), 'w');
+        $stream->write($defaults . "\n\n" . $customs);
+    }
 }
