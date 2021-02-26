@@ -75,7 +75,7 @@ final class Iterator
         }
         // @codeCoverageIgnoreEnd
 
-        $this->writer->write('🎾 Iterating ' . $dir->path()->toString() . "\n\n");
+        $this->writer->write('👀 Iterating ' . $dir->path()->toString() . "\n\n");
         $this->iterate();
     }
 
