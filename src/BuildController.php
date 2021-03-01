@@ -36,14 +36,13 @@ class BuildController extends Controller
 
     public function getParameters(): ParametersInterface
     {
-        return (new Parameters())
-            ->withAddedRequired(
-                dir: (new StringParameter())
-                    ->withDescription('Directory for VuePress-based documentation'),
-                stream: (new StringParameter())
-                    ->withDefault('php://stdout')
-                    ->withDescription('Stream to write log (w)')
-            );
+        return new Parameters(
+            dir: (new StringParameter())
+                ->withDescription('Directory for VuePress-based documentation'),
+            stream: (new StringParameter())
+                ->withDefault('php://stdout')
+                ->withDescription('Stream to write log (w)')
+        );
     }
 
     public function run(ArgumentsInterface $arguments): ResponseInterface
