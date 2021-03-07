@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace DocsDeploy;
 
-use Chevere\Components\Action\Controller;
+use Chevere\Components\Controller\Controller;
 use function Chevere\Components\Filesystem\dirForPath;
 use function Chevere\Components\Filesystem\fileForPath;
 use Chevere\Components\Parameter\Parameters;
