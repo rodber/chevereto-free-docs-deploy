@@ -1,6 +1,14 @@
 const project = require('./config-project')
 
-if(!project.plugins) {
+project.theme = 'default-prefers-color-scheme';
+project.head.push(
+    ['meta', { 
+        name: 'viewport',
+        content: 'width=device-width, initial-scale=1.0'
+    }]
+);
+
+if (!project.plugins) {
     project.plugins = [];
 }
 project.plugins.push(
