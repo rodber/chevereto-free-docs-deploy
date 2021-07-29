@@ -49,6 +49,10 @@ class Modules
 
                 continue;
             }
+            $rootNode = "/${node}";
+            if (! isset($this->iterator->flags()[$rootNode])) {
+                continue;
+            }
             $this->setNavFor($node);
             $this->setSideFor($node);
         }
@@ -80,7 +84,10 @@ class Modules
     {
         $side = 'auto';
         $rootNode = "/${node}";
-        $flags = $this->iterator->flags()[$rootNode];
+        $flags = $this->iterator->flags()[$rootNode] ?? null;
+        if ($flags === null) {
+            return;
+        }
         $contents = $this->iterator->contents()[$rootNode];
         $filepath = $flags->dir()->path()->getChild('sidebar.php');
         if ($filepath->exists()) {
@@ -99,14 +106,11 @@ class Modules
         $rootNode = "/${node}";
         $flags = $this->iterator->flags()[$rootNode];
         $contents = $this->iterator->contents()[$rootNode];
-        if ($flags->hasReadme()) {
+        if ($flags !== null && $flags->hasReadme()) {
             $this->nav[] = $this->getNavLink($title, $rootNode);
 
             return;
         }
-        // if (! $flags->hasNested()) {
-        //     return;
-        // }
         $navMenu = [
             'text' => $title,
             'ariaLabel' => $title . ' Menu',

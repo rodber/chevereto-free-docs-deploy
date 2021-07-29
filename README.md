@@ -6,7 +6,25 @@
 - Usa convenciones en el sistema de archivos
 - Simplifica el ordenar y nombrar enlaces
 
-En resumen, remueve toda la lata de trabajar con VuePress para que te enfoques en tus documentos.
+## Use as a template
+
+Add this repository as a remote template:
+
+```sh
+git remote add template git@github.com:chevere/docs-deploy.git
+```
+
+Fetch remote template:
+
+```sh
+git fetch template
+```
+
+Merge remote template:
+
+```sh
+git merge template/main --allow-unrelated-histories
+```
 
 ## Repositorio markdown
 
