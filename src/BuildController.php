@@ -16,6 +16,9 @@ namespace DocsDeploy;
 use Chevere\Components\Controller\Controller;
 use function Chevere\Components\Filesystem\dirForPath;
 use function Chevere\Components\Filesystem\fileForPath;
+use function Chevere\Components\Parameter\parameters;
+use function Chevere\Components\Parameter\stringParameter;
+
 use Chevere\Components\Parameter\Parameters;
 use Chevere\Components\Parameter\StringParameter;
 use function Chevere\Components\Writer\streamFor;
@@ -36,12 +39,14 @@ class BuildController extends Controller
 
     public function getParameters(): ParametersInterface
     {
-        return new Parameters(
-            dir: (new StringParameter())
-                ->withDescription('Directory for VuePress-based documentation'),
-            stream: (new StringParameter())
-                ->withDefault('php://stdout')
-                ->withDescription('Stream to write log (w)')
+        return parameters(
+            dir: stringParameter(
+                description: 'Directory for VuePress-based documentation',
+            ),
+            stream: stringParameter(
+                description: 'Stream to write log (w)',
+                default: 'php://stdout',
+            )
         );
     }
 
