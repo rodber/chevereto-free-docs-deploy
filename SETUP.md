@@ -10,7 +10,7 @@ Refer to the [CONSOLE GUIDE](guides/console/SETUP.md).
 
 ![Create repo](guides/create-repo-template.png)
 
-Once you create the new repo:
+When done:
 
 1. Go to **Secrets** under **Settings** from your new repo
 2. Click on **New repository secret**

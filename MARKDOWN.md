@@ -5,9 +5,9 @@ This system requires a markdown repo. Use [chevere/docs](https://github.com/chev
 ## Filesystem
 
 * Parses folders containing `.md`
-* Works with N sub-leves deep
+* Works with N sub-levels
 * `README.md` for indexes.
-* `file-1.md` is automatically named to `File 1`.
+* `file-1.md` is automatic named to `File 1`.
 
 | Structure                                                                          | Navigation       | Sidebar  |
 | ---------------------------------------------------------------------------------- | ---------------- | -------- |
@@ -22,7 +22,7 @@ Use `.php` files to customize the document names / links. **Must** use `<file>.m
 
 ### `sorting.php`
 
-The `sorting.php` file enables to customize the menu sorting for navbar and sidebar.
+The `sorting.php` file enables to customize the menu sorting for nav and sidebar.
 
 ```php
 <?php
@@ -36,7 +36,7 @@ return [
 
 ### `naming.php`
 
-The `naming.php` file enables to customize the names used by the nodes (files and folders) and it will affect the link display for navbar and sidebar.
+The `naming.php` file enables to customize the names used by the nodes (files and folders) and it will affect the link display for nav and sidebar.
 
 ```php
 <?php
@@ -50,7 +50,7 @@ return [
 
 ### `sidebar.php`
 
-The `sidebar.php` file enables to manually override the sidebar.
+The `sidebar.php` file enables to override the sidebar.
 
 ```php
 <?php

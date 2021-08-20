@@ -8,7 +8,9 @@ Copy `./config.sh.dist` to `./config.sh`.
 cp config.sh.dist config.sh
 ```
 
-Change the variables to match the target project, then make `deploy.sh` executable:
+Change the variables to match the target project.
+
+Make `deploy.sh` executable:
 
 ```sh
 chmod +x deploy.sh
