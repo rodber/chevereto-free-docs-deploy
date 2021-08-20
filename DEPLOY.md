@@ -10,8 +10,8 @@ Refer to the [CONSOLE GUIDE](guides/console/DEPLOY.md).
 2. Select **Build** under **Workflows**
 3. Click on **Run Workflow** and confirm
 
-![Build](src/build.png)
+![Build](guides/build.png)
 
 ✅ When done **the documentation will be available** at your target repository.
 
-![Build log](src/build-log.png)
+![Build log](guides/build-log.png)
