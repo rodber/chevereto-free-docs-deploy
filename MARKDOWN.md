@@ -9,12 +9,12 @@ This system requires a markdown repo. Use [chevere/docs](https://github.com/chev
 * `README.md` for indexes.
 * `file-1.md` is automatically named to `File 1`.
 
-| Structure                                                                            | Navigation       | Sidebar  |
-| ------------------------------------------------------------------------------------ | ---------------- | -------- |
-| [Files](tests/_resources/docs/files/)                                                | Dropdown         | Auto     |
-| [Archivos con leeme](tests/_resources/docs/files-readme/)                            | Link             | Combined |
-| [Archivos con leeme y sub-carpetas](tests/_resources/docs/files-readme-sub-folders/) | Link             | Combined |
-| [Sub-carpetas](tests/_resources/docs/sub-folders/)                                   | Grouped dropdown | Auto     |
+| Structure                                                                          | Navigation       | Sidebar  |
+| ---------------------------------------------------------------------------------- | ---------------- | -------- |
+| [Files](tests/_resources/docs/files/)                                              | Dropdown         | Auto     |
+| [Files with readme](tests/_resources/docs/files-readme/)                           | Link             | Combined |
+| [Files with readme + sub-folders](tests/_resources/docs/files-readme-sub-folders/) | Link             | Combined |
+| [Sub-folders](tests/_resources/docs/sub-folders/)                                  | Grouped dropdown | Auto     |
 
 ## Flags
 
