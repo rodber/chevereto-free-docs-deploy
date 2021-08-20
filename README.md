@@ -1,4 +1,4 @@
-# DocsDeploy
+# docs-deploy
 
 ✨ Publishes a markdown documentation using [VuePress](https://vuepress.vuejs.org/).
 
