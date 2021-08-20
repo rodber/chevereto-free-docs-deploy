@@ -156,7 +156,7 @@ final class Iterator
             $filepath = $flags->dir()->path()->getChild($flagger . '.php');
             $return = null;
             if ($filepath->exists()) {
-                $filePhp = filePhpReturnForPath($filepath->toString())->withStrict(false);
+                $filePhp = filePhpReturnForPath($filepath->toString());
                 $return = $filePhp->var();
             }
             $values[$flagger] = $return;
