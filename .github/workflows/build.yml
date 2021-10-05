@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: ${{ secrets.REPO_DOCS }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.REPO_DOCS_ACCESS_TOKEN }}
           path: docs
 
       - name: Setup cache environment
@@ -98,7 +98,7 @@ jobs:
       - name: vuepress-deploy
         uses: jenkey2011/vuepress-deploy@v1
         env:
-          ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ACCESS_TOKEN: ${{ secrets.REPO_HOSTING_ACCESS_TOKEN }}
           TARGET_REPO: ${{ secrets.REPO_HOSTING }}
           TARGET_BRANCH: main
           BUILD_SCRIPT: yarn && yarn build
