@@ -21,17 +21,17 @@ chmod +x deploy.sh
 Run `yarn dev` to preview.
 
 ```sh
-./deploy <mode=dev|prod> <resource=true|false>
+./deploy.sh <mode=dev|prod> <resource=true|false>
 ```
 
 Deploy to dev re-sourcing documentation repo:
 
 ```sh
-./deploy dev true
+./deploy.sh dev true
 ```
 
 Deploy to production re-sourcing documentation repo:
 
 ```sh
-./deploy prod true
+./deploy.sh prod true
 ```
