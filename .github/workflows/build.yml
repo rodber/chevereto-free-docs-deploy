@@ -21,8 +21,6 @@ jobs:
       key: cache-1613673233781
     name: PHP ${{ matrix.php-versions }} test on ${{ matrix.operating-system }}
     steps:
-      - name: Keys
-
       - name: Checkout
         uses: actions/checkout@master
 
