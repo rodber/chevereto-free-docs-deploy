@@ -1,0 +1,106 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      matrix:
+        operating-system: [ubuntu-latest]
+        php-versions: ["8.0"]
+    env:
+      extensions: opcache, mbstring, ds, pcov
+      tools: composer
+      ini-values: opcache.enable_cli = 1, precision=16, default_charset='UTF-8', pcov.directory=src
+      key: cache-1613673233781
+    name: PHP ${{ matrix.php-versions }} test on ${{ matrix.operating-system }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - name: Checkout docs
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ secrets.REPO_DOCS }}
+          token: ${{ secrets.REPO_DOCS_ACCESS_TOKEN }}
+          path: docs
+
+      - name: Setup cache environment
+        id: extcache
+        uses: shivammathur/cache-extensions@v1
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: ${{ env.extensions }}
+          key: ${{ env.key }}
+
+      - name: Cache extensions
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.extcache.outputs.dir }}
+          key: ${{ steps.extcache.outputs.key }}
+          restore-keys: ${{ steps.extcache.outputs.key }}
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: ${{ env.extensions }}
+          ini-values: ${{ env.ini-values }}
+          coverage: pcov
+          tools: ${{ env.tools }}
+        env:
+          fail-fast: true
+
+      - name: Setup problem matchers for PHPUnit
+        run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
+      - name: Validate composer
+        run: composer validate
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --classmap-authoritative
+
+      - name: Copy .vuepress/ contents to docs/.vuepress/
+        run: cp -rf .vuepress/. docs/.vuepress/
+
+      - name: Build with PHP
+        run: php build.php
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - uses: actions/cache@v2
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: vuepress-deploy
+        uses: jenkey2011/vuepress-deploy@v1
+        env:
+          ACCESS_TOKEN: ${{ secrets.REPO_HOSTING_ACCESS_TOKEN }}
+          TARGET_REPO: ${{ secrets.REPO_HOSTING }}
+          TARGET_BRANCH: main
+          BUILD_SCRIPT: yarn && yarn build
+          BUILD_DIR: docs/.vuepress/dist/
+          CNAME: ${{ secrets.CNAME }}

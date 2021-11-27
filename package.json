@@ -1,0 +1,21 @@
+{
+    "name": "DocsDeploy",
+    "version": "0.0.1",
+    "description": "Chevere VuePress Deploy Template",
+    "main": "index.js",
+    "scripts": {
+        "dev": "node --max_old_space_size=8192 ./node_modules/vuepress/cli.js dev docs",
+        "build": "node --max_old_space_size=8192 ./node_modules/vuepress/cli.js build docs"
+    },
+    "license": "MIT",
+    "devDependencies": {
+        "@vuepress/plugin-google-analytics": "^1.8.2",
+        "@vuepress/plugin-medium-zoom": "^1.8.2",
+        "@vuepress/plugin-pwa": "^1.8.2",
+        "vuepress": "^1.8.2"
+    },
+    "author": "Rodolfo Berrios",
+    "dependencies": {
+        "vuepress-theme-default-prefers-color-scheme": "^2.0.0"
+    }
+}

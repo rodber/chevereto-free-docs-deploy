@@ -1,0 +1,29 @@
+/**
+ * Default Styles here.
+ *
+ * ref：https://vuepress.vuejs.org/config/#index-styl
+ */
+
+.home .hero img
+  max-width 450px!important
+
+h1, h2, h3, h4, h5, h6,
+.theme-default-content code
+  word-break break-word
+
+.sidebar-heading
+  text-overflow ellipsis
+  overflow hidden
+
+.algolia-docsearch-suggestion--title
+    color $textColor !important
+.algolia-docsearch-suggestion--highlight
+    color $accentColor !important
+.algolia-autocomplete
+    .ds-dropdown-menu
+        background-color #FFF !important
+    .ds-suggestion
+        border-color $borderColor !important
+
+.theme-code-group .theme-code-group__nav .theme-code-group__nav-tab
+    color var(--preTextColor) !important
