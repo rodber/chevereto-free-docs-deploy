@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace DocsDeploy;
 
-use function Chevere\Components\Filesystem\dirForPath;
-use function Chevere\Components\Filesystem\filePhpReturnForPath;
-use Chevere\Interfaces\Filesystem\DirInterface;
-use Chevere\Interfaces\Writer\WriterInterface;
+use function Chevere\Filesystem\dirForPath;
+use function Chevere\Filesystem\filePhpReturnForPath;
+use Chevere\Filesystem\Interfaces\DirInterface;
+use Chevere\Writer\Interfaces\WriterInterface;
 use RecursiveDirectoryIterator;
 use RecursiveFilterIterator;
 use RecursiveIteratorIterator;
@@ -57,10 +57,10 @@ final class Iterator
         $dir->assertExists();
         $this->dir = $dir;
         $this->writer = $writer;
-        $this->dirIterator = $this->getRecursiveDirectoryIterator($dir->path()->toString());
+        $this->dirIterator = $this->getRecursiveDirectoryIterator($dir->path()->__toString());
         $this->filterIterator = $this->getRecursiveFilterIterator($this->dirIterator);
         $this->recursiveIterator = new RecursiveIteratorIterator($this->filterIterator, RecursiveIteratorIterator::SELF_FIRST);
-        $this->chop = strlen($this->dir->path()->toString());
+        $this->chop = strlen($this->dir->path()->__toString());
 
         try {
             $this->recursiveIterator->rewind();
@@ -75,7 +75,7 @@ final class Iterator
         }
         // @codeCoverageIgnoreEnd
 
-        $this->writer->write('👀 Iterating ' . $dir->path()->toString() . "\n\n");
+        $this->writer->write('👀 Iterating ' . $dir->path()->__toString() . "\n\n");
         $this->iterate();
     }
 
@@ -156,7 +156,7 @@ final class Iterator
             $filepath = $flags->dir()->path()->getChild($flagger . '.php');
             $return = null;
             if ($filepath->exists()) {
-                $filePhp = filePhpReturnForPath($filepath->toString());
+                $filePhp = filePhpReturnForPath($filepath->__toString());
                 $return = $filePhp->var();
             }
             $values[$flagger] = $return;
