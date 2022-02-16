@@ -29,11 +29,10 @@ When done:
 2. Click on **New repository secret**
 3. Provide the following repository **secrets**:
 
-| Key                         | Description / example                                          |
-| --------------------------- | -------------------------------------------------------------- |
-| `REPO_DOCS_DEPLOY`          | [Docs deploy](#c-docs-deploy-repo) repo as `owner/docs-deploy` |
-| `REPO_DOCS_DEPLOY_USERNAME` | Username with access to repo above                             |
-| `REPO_DOCS_DEPLOY_TOKEN`    | PAT to access `REPO_DOCS_DEPLOY`                               |
+| Key                      | Description / example                                          |
+| ------------------------ | -------------------------------------------------------------- |
+| `REPO_DOCS_DEPLOY`       | [Docs deploy](#c-docs-deploy-repo) repo as `owner/docs-deploy` |
+| `REPO_DOCS_DEPLOY_TOKEN` | PAT to access `REPO_DOCS_DEPLOY`                               |
 
 ### (C) docs-deploy repo
 
@@ -47,13 +46,13 @@ When done:
 2. Click on **New repository secret**
 3. Provide the following repository **secrets**:
 
-| Key                       | Description / example                                |
-| ------------------------- | ---------------------------------------------------- |
-| REPO_DOCS                 | [Docs repo](#b-docs-repo) as `owner/docs-repo`       |
-| REPO_DOCS_ACCESS_TOKEN    | PAT to access `REPO_DOCS`                            |
-| REPO_HOSTING              | [Hosting repo](#a-hosting-repo) as `owner/host-repo` |
-| REPO_HOSTING_ACCESS_TOKEN | PAT to access `REPO_HOSTING`                         |
-| CNAME                     | Hostname for your website as `mydomain.com`          |
+| Key                         | Description / example                                |
+| --------------------------- | ---------------------------------------------------- |
+| `REPO_DOCS`                 | [Docs repo](#b-docs-repo) as `owner/docs-repo`       |
+| `REPO_DOCS_ACCESS_TOKEN`    | PAT to access `REPO_DOCS`                            |
+| `REPO_HOSTING`              | [Hosting repo](#a-hosting-repo) as `owner/host-repo` |
+| `REPO_HOSTING_ACCESS_TOKEN` | PAT to access `REPO_HOSTING`                         |
+| `CNAME`                     | Hostname for your website as `mydomain.com`          |
 
 ## Automatic deployment on docs repo update
 
