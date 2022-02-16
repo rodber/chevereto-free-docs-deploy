@@ -38,6 +38,11 @@ else
     echo 'Skipping docs sourcing...'
 fi
 
+if [ $# -eq 3 ]; then
+    rm -rf docs/
+    cp -a $3 docs/
+fi
+
 echo 'Copy .vuepress/ contents to docs/.vuepress/'
 cp -rf .vuepress/. docs/.vuepress/
 
