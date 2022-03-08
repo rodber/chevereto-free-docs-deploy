@@ -1,6 +1,10 @@
 # !/usr/bin/env sh
 
+# Dev local docs folder: ./deploy.sh dev false ~/git/chevereto/v4-docs
+
 set -e
+PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+cd $PROJECT_DIR
 
 if [ -f "./config.sh" ]; then
     . ./config.sh
