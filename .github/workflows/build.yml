@@ -95,6 +95,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
+      - name: Show dir contents
+        run: ls -la docs/.vuepress
+
       - name: vuepress-deploy
         uses: jenkey2011/vuepress-deploy@v1
         env:
