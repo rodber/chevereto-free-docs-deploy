@@ -3,10 +3,10 @@ on:
   workflow_dispatch:
 jobs:
   update-template:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: actions-template-sync
         uses: AndreasAugustin/actions-template-sync@v0.4.1-draft
         with:
