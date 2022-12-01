@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace DocsDeploy;
 
-use Chevere\Interfaces\Filesystem\DirInterface;
+use Chevere\Filesystem\Interfaces\DirInterface;
 use Countable;
 
 class Flags implements Countable

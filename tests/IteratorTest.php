@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace Chevere\Tests;
 
-use function Chevere\Components\Filesystem\dirForPath;
-use function Chevere\Components\Writer\streamTemp;
-use Chevere\Components\Writer\StreamWriter;
-use Chevere\Interfaces\Writer\WriterInterface;
+use function Chevere\Filesystem\dirForPath;
+use function Chevere\Writer\streamTemp;
+use Chevere\Writer\StreamWriter;
+use Chevere\Writer\Interfaces\WriterInterface;
 use DocsDeploy\Iterator;
 use PHPUnit\Framework\TestCase;
 

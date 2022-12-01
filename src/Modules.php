@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace DocsDeploy;
 
-use function Chevere\Components\Filesystem\filePhpReturnForPath;
+use function Chevere\Filesystem\filePhpReturnForPath;
 
 class Modules
 {
@@ -91,7 +91,7 @@ class Modules
         $contents = $this->iterator->contents()[$rootNode];
         $filepath = $flags->dir()->path()->getChild('sidebar.php');
         if ($filepath->exists()) {
-            $filePhp = filePhpReturnForPath($filepath->toString());
+            $filePhp = filePhpReturnForPath($filepath->__toString());
             $side = $filePhp->var();
         } elseif ($flags->hasNested() || $flags->hasReadme()) {
             $side = $this->getSide($rootNode, $flags, $contents);

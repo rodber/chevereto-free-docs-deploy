@@ -2,7 +2,7 @@ const project = require('./config-project')
 
 project.theme = 'default-prefers-color-scheme';
 project.head.push(
-    ['meta', { 
+    ['meta', {
         name: 'viewport',
         content: 'width=device-width, initial-scale=1.0'
     }]
@@ -18,6 +18,14 @@ project.plugins.push(
     }],
     ['@vuepress/medium-zoom', true]
 );
-project.themeConfig.nav = require('./nav/en')
-project.themeConfig.sidebar = require('./sidebar/en')
+if (!project.themeConfig.nav) {
+    project.themeConfig.nav = [];
+}
+project.themeConfig.nav.push(
+    ...require('./nav/en')
+);
+if (!project.themeConfig.sidebar) {
+    project.themeConfig.sidebar = [];
+}
+project.themeConfig.sidebar = require('./sidebar/en');
 module.exports = project

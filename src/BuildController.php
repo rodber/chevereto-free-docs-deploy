@@ -13,21 +13,20 @@ declare(strict_types=1);
 
 namespace DocsDeploy;
 
-use Chevere\Components\Controller\Controller;
-use function Chevere\Components\Filesystem\dirForPath;
-use function Chevere\Components\Filesystem\fileForPath;
-use function Chevere\Components\Parameter\parameters;
-use function Chevere\Components\Parameter\stringParameter;
-
-use Chevere\Components\Parameter\Parameters;
-use Chevere\Components\Parameter\StringParameter;
-use function Chevere\Components\Writer\streamFor;
-use Chevere\Components\Writer\StreamWriter;
-use Chevere\Interfaces\Filesystem\DirInterface;
-use Chevere\Interfaces\Parameter\ArgumentsInterface;
-use Chevere\Interfaces\Parameter\ParametersInterface;
-use Chevere\Interfaces\Response\ResponseInterface;
-use Chevere\Interfaces\Writer\WriterInterface;
+use Chevere\Controller\Controller;
+use function Chevere\Filesystem\dirForPath;
+use function Chevere\Filesystem\fileForPath;
+use function Chevere\Parameter\parameters;
+use function Chevere\Parameter\stringParameter;
+use Chevere\Parameter\Parameters;
+use Chevere\Parameter\StringParameter;
+use function Chevere\Writer\streamFor;
+use Chevere\Writer\StreamWriter;
+use Chevere\Filesystem\Interfaces\DirInterface;
+use Chevere\Parameter\Interfaces\ArgumentsInterface;
+use Chevere\Parameter\Interfaces\ParametersInterface;
+use Chevere\Response\Interfaces\ResponseInterface;
+use Chevere\Writer\Interfaces\WriterInterface;
 
 class BuildController extends Controller
 {
@@ -73,11 +72,11 @@ class BuildController extends Controller
             $stylDefaultFile = fileForPath($stylesPath . 'default-' . $styl . $stylExt);
             $stylFile = fileForPath($stylesPath . $styl . $stylExt);
             if ($stylFile->exists() && $stylDefaultFile->exists()) {
-                $defaults = $stylDefaultFile->contents();
-                $customs = $stylFile->contents();
-                $stream = streamFor($stylFile->path()->toString(), 'w');
+                $defaults = $stylDefaultFile->getContents();
+                $customs = $stylFile->getContents();
+                $stream = streamFor($stylFile->path()->__toString(), 'w');
                 $stream->write($defaults . "\n\n" . $customs);
-                $this->writer->write('- ' . $stylFile->path()->toString() . "\n");
+                $this->writer->write('- ' . $stylFile->path()->__toString() . "\n");
             }
         }
     }
@@ -97,7 +96,7 @@ class BuildController extends Controller
                 $file->create();
             }
             $file->put(toModuleExport($module));
-            $this->writer->write('- ' . $file->path()->toString() . "\n");
+            $this->writer->write('- ' . $file->path()->__toString() . "\n");
         }
     }
 }

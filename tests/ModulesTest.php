@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Chevere\Tests;
 
-use function Chevere\Components\Filesystem\dirForPath;
-use function Chevere\Components\Writer\streamTemp;
-use Chevere\Components\Writer\StreamWriter;
+use function Chevere\Filesystem\dirForPath;
+use function Chevere\Writer\streamTemp;
+use Chevere\Writer\StreamWriter;
 use DocsDeploy\Iterator;
 use DocsDeploy\Modules;
 use PHPUnit\Framework\TestCase;
@@ -24,11 +24,11 @@ final class ModulesTest extends TestCase
 {
     public function testConstruct(): void
     {
-        // $dir = dirForPath(__DIR__ . '/_resources/docs/');
-        $dir = dirForPath('/home/rodolfo/git/chevere/docs-deploy/docs/');
+        $dir = dirForPath(__DIR__ . '/_resources/docs/');
         $writer = new StreamWriter(streamTemp(''));
         $iterator = new Iterator($dir, $writer);
         $modules = new Modules($iterator);
+        $this->expectNotToPerformAssertions();
         $modules->execute();
     }
 }

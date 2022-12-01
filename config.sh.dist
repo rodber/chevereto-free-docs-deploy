@@ -1,5 +1,9 @@
 # !/usr/bin/env sh
 
 GIT_DOCS="git@github.com:chevere/docs.git"
+<<<<<<< HEAD
 GIT_HOSTING="git@github.com:chevere/chevere.github.io.git"
+=======
+GIT_HOSTING="git@github.com:chevere/docs-hosting.git"
+>>>>>>> template/main
 CNAME="chevere.org"
