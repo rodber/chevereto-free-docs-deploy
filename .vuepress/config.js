@@ -36,6 +36,17 @@ if (project.themeConfig.nav_after) {
 if (!project.themeConfig.sidebar) {
     project.themeConfig.sidebar = [];
 }
+const prevExtendMarkdown = project.markdown && project.markdown.extendMarkdown;
+project.markdown = Object.assign({}, project.markdown, {
+    extendMarkdown: (md) => {
+        if (prevExtendMarkdown) {
+            prevExtendMarkdown(md);
+        }
+        if (md.disable) {
+            md.disable('emoji');
+        }
+    }
+});
 project.chainWebpack = (config) => {
     config.module
       .rule('webp')
