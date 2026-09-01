@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Tests;
 
+use function Chevere\Filesystem\directoryForPath;
 use function Chevere\Filesystem\dirForPath;
 use function Chevere\Writer\streamTemp;
 use Chevere\Writer\StreamWriter;
@@ -24,7 +25,7 @@ final class IteratorTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $dir = dirForPath(__DIR__ . '/_resources/docs/');
+        $dir = directoryForPath(__DIR__ . '/_resources/docs/');
         $writer = new StreamWriter(streamTemp(''));
         $iterator = new Iterator($dir, $writer);
         $this->assertSame($dir, $iterator->dir());
@@ -145,7 +146,7 @@ final class IteratorTest extends TestCase
     private function getIterator(string $path, WriterInterface $writer = null): Iterator
     {
         return new Iterator(
-            dirForPath(__DIR__ . '/_resources/docs/' . $path),
+            directoryForPath(__DIR__ . '/_resources/docs/' . $path),
             $writer ?? new StreamWriter(streamTemp(''))
         );
     }

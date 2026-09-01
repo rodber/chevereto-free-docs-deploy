@@ -14,9 +14,14 @@ declare(strict_types=1);
 namespace DocsDeploy;
 
 use Chevere\Controller\Controller;
+use Chevere\Filesystem\Interfaces\DirectoryInterface;
+
+use function Chevere\Filesystem\directoryForPath;
 use function Chevere\Filesystem\dirForPath;
 use function Chevere\Filesystem\fileForPath;
+use function Chevere\Parameter\null;
 use function Chevere\Parameter\parameters;
+use function Chevere\Parameter\string;
 use function Chevere\Parameter\stringParameter;
 use Chevere\Parameter\Parameters;
 use Chevere\Parameter\StringParameter;
@@ -24,6 +29,8 @@ use function Chevere\Writer\streamFor;
 use Chevere\Writer\StreamWriter;
 use Chevere\Filesystem\Interfaces\DirInterface;
 use Chevere\Parameter\Interfaces\ArgumentsInterface;
+use Chevere\Parameter\Interfaces\CastArgumentInterface;
+use Chevere\Parameter\Interfaces\ParameterInterface;
 use Chevere\Parameter\Interfaces\ParametersInterface;
 use Chevere\Response\Interfaces\ResponseInterface;
 use Chevere\Writer\Interfaces\WriterInterface;
@@ -32,35 +39,23 @@ class BuildController extends Controller
 {
     private WriterInterface $writer;
 
-    private DirInterface $dir;
+    private DirectoryInterface $dir;
 
     private string $vuePressPath = '';
 
-    public function getParameters(): ParametersInterface
+    public static function acceptResponse(): ParameterInterface
     {
-        return parameters(
-            dir: stringParameter(
-                description: 'Directory for VuePress-based documentation',
-            ),
-            stream: stringParameter(
-                description: 'Stream to write log (w)',
-                default: 'php://stdout',
-            )
-        );
+        return null();
     }
 
-    public function run(ArgumentsInterface $arguments): ResponseInterface
+    public function run(string $dir, string $stream): void
     {
-        $dir = $arguments->getString('dir');
-        $this->dir = dirForPath($dir);
-        $stream = $arguments->getString('stream');
+        $this->dir = directoryForPath($dir);
         $this->writer = new StreamWriter(streamFor($stream, 'w'));
-        $this->vuePressPath = "${dir}.vuepress/";
+        $this->vuePressPath = "{$dir}.vuepress/";
         $this->processModules();
         $this->processStyles();
         $this->writer->write("\n✨ Complete");
-
-        return $this->getResponse();
     }
 
     private function processStyles(): void

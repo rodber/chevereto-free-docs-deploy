@@ -13,8 +13,11 @@ declare(strict_types=1);
 
 namespace DocsDeploy;
 
+use function Chevere\Filesystem\directoryForPath;
 use function Chevere\Filesystem\dirForPath;
 use function Chevere\Filesystem\filePhpReturnForPath;
+
+use Chevere\Filesystem\Interfaces\DirectoryInterface;
 use Chevere\Filesystem\Interfaces\DirInterface;
 use Chevere\Writer\Interfaces\WriterInterface;
 use RecursiveDirectoryIterator;
@@ -29,7 +32,7 @@ final class Iterator
 
     public const SORTING = ['README.md'];
 
-    private DirInterface $dir;
+    private DirectoryInterface $dir;
 
     private WriterInterface $writer;
 
@@ -47,12 +50,14 @@ final class Iterator
 
     private SplFileinfo $current;
 
+    private int $chop;
+
     /**
      * @var Flags[]
      */
     private array $flags = [];
 
-    public function __construct(DirInterface $dir, WriterInterface $writer)
+    public function __construct(DirectoryInterface $dir, WriterInterface $writer)
     {
         $dir->assertExists();
         $this->dir = $dir;
@@ -79,7 +84,7 @@ final class Iterator
         $this->iterate();
     }
 
-    public function dir(): DirInterface
+    public function dir(): DirectoryInterface
     {
         return $this->dir;
     }
@@ -157,7 +162,7 @@ final class Iterator
             $return = null;
             if ($filepath->exists()) {
                 $filePhp = filePhpReturnForPath($filepath->__toString());
-                $return = $filePhp->var();
+                $return = $filePhp->get();
             }
             $values[$flagger] = $return;
         }
@@ -191,7 +196,7 @@ final class Iterator
         }
         if ($this->current->isFile()) {
             if (! isset($this->flags[$parent])) {
-                $this->flags[$parent] = new Flags(dirForPath($parent));
+                $this->flags[$parent] = new Flags(directoryForPath($parent));
             }
             $this->flags[$parent] = $this->flags[$parent]
                 ->withAddedMarkdown();

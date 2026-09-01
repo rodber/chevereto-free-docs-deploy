@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Chevere\Tests;
 
+use function Chevere\Filesystem\directoryForPath;
 use function Chevere\Filesystem\dirForPath;
 use function Chevere\Writer\streamTemp;
 use Chevere\Writer\StreamWriter;
@@ -24,7 +25,7 @@ final class ModulesTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $dir = dirForPath(__DIR__ . '/_resources/docs/');
+        $dir = directoryForPath(__DIR__ . '/_resources/docs/');
         $writer = new StreamWriter(streamTemp(''));
         $iterator = new Iterator($dir, $writer);
         $modules = new Modules($iterator);

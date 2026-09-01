@@ -49,7 +49,7 @@ class Modules
 
                 continue;
             }
-            $rootNode = "/${node}";
+            $rootNode = "/{$node}";
             if (! isset($this->iterator->flags()[$rootNode])) {
                 continue;
             }
@@ -83,7 +83,7 @@ class Modules
     private function setSideFor(string $node): void
     {
         $side = 'auto';
-        $rootNode = "/${node}";
+        $rootNode = "/{$node}";
         $flags = $this->iterator->flags()[$rootNode] ?? null;
         if ($flags === null) {
             return;
@@ -92,18 +92,18 @@ class Modules
         $filepath = $flags->dir()->path()->getChild('sidebar.php');
         if ($filepath->exists()) {
             $filePhp = filePhpReturnForPath($filepath->__toString());
-            $side = $filePhp->var();
+            $side = $filePhp->get();
         } elseif ($flags->hasNested() || $flags->hasReadme()) {
             $side = $this->getSide($rootNode, $flags, $contents);
         }
-        $this->side["/${node}"] = $side;
+        $this->side["/{$node}"] = $side;
     }
 
     private function setNavFor(string $node): void
     {
         $title = $this->iterator->flags()['/']->naming()[$node]
             ?? $this->getTitle($node);
-        $rootNode = "/${node}";
+        $rootNode = "/{$node}";
         $flags = $this->iterator->flags()[$rootNode];
         $contents = $this->iterator->contents()[$rootNode];
         if ($flags !== null && $flags->hasReadme()) {

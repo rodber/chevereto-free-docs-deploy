@@ -13,13 +13,12 @@ declare(strict_types=1);
 
 use DocsDeploy\BuildController;
 
+use function Chevere\Parameter\arguments;
+
 require 'vendor/autoload.php';
 
 (new BuildController())
     ->run(
-        (new BuildController())
-            ->getArguments(
-                dir: getcwd() . '/docs/',
-                stream: 'php://stdout',
-            )
+        dir: getcwd() . '/docs/',
+        stream: 'php://stdout',
     );

@@ -13,12 +13,13 @@ declare(strict_types=1);
 
 namespace DocsDeploy;
 
+use Chevere\Filesystem\Interfaces\DirectoryInterface;
 use Chevere\Filesystem\Interfaces\DirInterface;
 use Countable;
 
 class Flags implements Countable
 {
-    private DirInterface $dir;
+    private DirectoryInterface $dir;
 
     private bool $hasNested = false;
 
@@ -30,12 +31,12 @@ class Flags implements Countable
 
     private int $count = 0;
 
-    public function __construct(DirInterface $dir)
+    public function __construct(DirectoryInterface $dir)
     {
         $this->dir = $dir;
     }
 
-    public function dir(): DirInterface
+    public function dir(): DirectoryInterface
     {
         return $this->dir;
     }

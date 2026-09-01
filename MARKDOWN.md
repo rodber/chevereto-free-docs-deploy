@@ -64,7 +64,9 @@ The `.vuepress/` folder is required to config VuePress.
 
 * `config-project.js`
   * Injects config values to `config.js`
+* `enhanceApp-project.js`
+  * Injects custom Vue components to the VuePress app
 * `public/`
   * Use it for public content such as pics, icons and the manifest file. A file at `.vuepress/public/logo.svg` will resolve to `/logo.svg`
-* `styles/`  
+* `styles/`
   * Uses to store styling (CSS) properties.
